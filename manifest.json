@@ -1,17 +1,18 @@
 {
-"name": "Оливер — Семейный трекер",
-"short_name": "Оливер",
-"start_url": "./index.html",
-"display": "standalone",
-"orientation": "portrait",
-"background_color": "#F8FAFC",
-"theme_color": "#4338CA",
-"icons": [
-{
-"src": "icon.svg",
-"sizes": "192x192 512x512",
-"type": "image/svg+xml",
-"purpose": "any maskable"
-}
-]
+  "name": "Оливер — Семейный трекер",
+  "short_name": "Оливер",
+  "description": "Приложение мотивации для Оли, Веры и Маши",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8FAFC",
+  "theme_color": "#4338CA",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
