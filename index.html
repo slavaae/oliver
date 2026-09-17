@@ -20,14 +20,14 @@
     <span id="toast-text">Отличная работа!</span>
   </div>
 
-  <!-- ШТОРКА ЗАМЕЧАНИЙ ДЛЯ МАМЫ -->
+  <!-- ШТОРКА ЗАМЕЧАНИЙ ДЛЯ МАМЫ (НУЖНО ДОДЕЛАТЬ) -->
   <div id="modal-revision" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end justify-center hidden">
-    <div class="bg-white w-full max-w-md rounded-t-3xl p-5 shadow-2xl space-y-4 animate-in slide-in-from-bottom">
+    <div class="bg-white w-full max-w-md rounded-t-3xl p-5 shadow-2xl space-y-4">
       <div class="flex justify-between items-center">
-        <h3 class="text-sm font-black text-slate-800">Что нужно доделать?</h3>
+        <h3 id="revision-modal-title" class="text-sm font-black text-slate-800">Что нужно доделать?</h3>
         <button onclick="closeRevisionModal()" class="text-slate-400 text-lg leading-none p-1">✕</button>
       </div>
-      <p class="text-xs text-slate-500">Нажмите на замечания (можно сразу несколько):</p>
+      <p class="text-xs text-slate-500">Выберите готовые замечания или напишите свое:</p>
       
       <div class="flex flex-wrap gap-1.5" id="presets-container">
         <button type="button" onclick="togglePreset(this, 'Не до конца убрано')" class="preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all">Не до конца убрано</button>
@@ -36,11 +36,11 @@
         <button type="button" onclick="togglePreset(this, 'Проверь еще раз по списку')" class="preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all">Проверь еще раз по списку</button>
       </div>
 
-      <textarea id="custom-revision-text" rows="2" placeholder="Свой комментарий (необязательно)..." class="w-full text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none resize-none"></textarea>
+      <textarea id="custom-revision-text" rows="2" placeholder="Комментарий для дочки..." class="w-full text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none resize-none"></textarea>
 
       <div class="flex gap-2 pt-1">
         <button onclick="closeRevisionModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Отмена</button>
-        <button onclick="confirmRevision()" class="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-200">Отправить дочке</button>
+        <button id="btn-submit-action" onclick="confirmRevisionAction()" class="flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-200">Отправить дочке</button>
       </div>
     </div>
   </div>
@@ -57,7 +57,6 @@
 
     <!-- Сетка профилей -->
     <div class="grid grid-cols-4 gap-2.5 w-full my-3">
-      <!-- ОЛЯ -->
       <button id="btn-olya" onclick="selectUser('olya')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
         <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500 shadow-sm mb-1 bg-purple-50 flex items-center justify-center text-sm font-bold text-purple-700">
           <img src="olya.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=olya'" alt="Оля" class="w-full h-full object-cover">
@@ -65,7 +64,6 @@
         <span class="text-xs font-bold text-slate-700">Оля</span>
       </button>
 
-      <!-- ВЕРА -->
       <button id="btn-vera" onclick="selectUser('vera')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
         <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500 shadow-sm mb-1 bg-amber-50 flex items-center justify-center text-sm font-bold text-amber-700">
           <img src="vera.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=vera'" alt="Вера" class="w-full h-full object-cover">
@@ -73,7 +71,6 @@
         <span class="text-xs font-bold text-slate-700">Вера</span>
       </button>
 
-      <!-- МАША -->
       <button id="btn-masha" onclick="selectUser('masha')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
         <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shadow-sm mb-1 bg-emerald-50 flex items-center justify-center text-sm font-bold text-emerald-700">
           <img src="masha.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=masha'" alt="Маша" class="w-full h-full object-cover">
@@ -81,7 +78,6 @@
         <span class="text-xs font-bold text-slate-700">Маша</span>
       </button>
 
-      <!-- МАМА -->
       <button id="btn-mom" onclick="selectUser('mom')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
         <div class="w-12 h-12 rounded-full border-2 border-indigo-600 shadow-sm mb-1 bg-indigo-50 flex items-center justify-center text-lg">
           👑
@@ -127,7 +123,7 @@
         <button onclick="logout()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl font-semibold">Сменить</button>
       </div>
 
-      <!-- Карточка баланса и депозита -->
+      <!-- Карточка баланса ребенка -->
       <div id="balance-card" class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 flex justify-between items-center border border-white/10">
         <div>
           <p class="text-[11px] text-white/80">Твой баланс</p>
@@ -140,7 +136,7 @@
       </div>
     </div>
 
-    <!-- Вкладки навигации -->
+    <!-- Вкладки навигации (Маркет открыт и для мамы!) -->
     <div class="flex border-b border-slate-200 bg-white px-2 text-xs font-medium text-slate-500 justify-around sticky top-0 z-20 overflow-x-auto">
       <button onclick="switchTab('tasks')" id="tab-tasks" class="nav-tab active py-3 px-2">Задания</button>
       <button onclick="switchTab('market')" id="tab-market" class="nav-tab py-3 px-2">Награды</button>
@@ -152,7 +148,7 @@
     <!-- ВКЛАДКА: ЗАДАНИЯ -->
     <div id="view-tasks" class="p-4 space-y-3 flex-1">
       <div class="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
-        <span>СПИСОК ДЕЛ</span>
+        <span>СПИСОК ДЕЛ (1-5 МОНЕТ)</span>
         <span id="streak-badge" class="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Стрик: 0 дн.</span>
       </div>
       <div id="tasks-container" class="space-y-2.5"></div>
@@ -160,9 +156,12 @@
 
     <!-- ВКЛАДКА: МАРКЕТПЛЕЙС НАГРАД -->
     <div id="view-market" class="p-4 space-y-3 flex-1 hidden">
-      <div class="text-xs text-slate-500 font-bold px-1">ВИТРИНА НАГРАД (ОБМЕН МОНЕТ)</div>
+      <div class="flex justify-between items-center px-1">
+        <span class="text-xs text-slate-500 font-bold">ВИТРИНА НАГРАД (ОТ 40 🪙)</span>
+        <span id="market-mom-badge" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-bold hidden">Режим мамы</span>
+      </div>
       
-      <!-- Активные заказы ребенка -->
+      <!-- Заказы ребенка в ожидании -->
       <div id="child-orders-container" class="space-y-2 hidden"></div>
 
       <div id="market-container" class="grid grid-cols-2 gap-2.5"></div>
@@ -171,28 +170,34 @@
     <!-- ВКЛАДКА: СЕМЕЙНАЯ КОПИЛКА -->
     <div id="view-coop" class="p-4 space-y-3 flex-1 hidden">
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <h3 class="font-bold text-sm text-slate-800">🌊 Семейная цель: Аквапарк</h3>
-        <p class="text-xs text-slate-500">Скидываемся всей семьей на общий большой праздник!</p>
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 id="coop-title-display" class="font-bold text-sm text-slate-800">🌊 Семейная цель: Аквапарк</h3>
+            <p class="text-xs text-slate-500">Скидываемся всей семьей на общий большой праздник!</p>
+          </div>
+          <button id="btn-edit-coop" onclick="editCoopTarget()" class="text-[11px] bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-xl font-bold hidden">✏️ Изменить</button>
+        </div>
+
         <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
           <div id="coop-progress-bar" class="bg-indigo-600 h-full rounded-full transition-all" style="width: 45%;"></div>
         </div>
         <div class="flex justify-between text-xs font-semibold text-slate-600">
           <span>Собрано: <b id="coop-collected">450</b> 🪙</span>
-          <span>Цель: 1000 🪙</span>
+          <span>Цель: <b id="coop-goal">1000</b> 🪙</span>
         </div>
         <div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl space-y-1">
           <div>Оля внесла: <b id="coop-olya">200</b> 🪙</div>
           <div>Вера внесла: <b id="coop-vera">150</b> 🪙</div>
           <div>Маша внесла: <b id="coop-masha">100</b> 🪙</div>
         </div>
-        <div class="flex gap-2 pt-1">
+        <div id="coop-child-form" class="flex gap-2 pt-1">
           <input id="coop-input" type="number" placeholder="Монет" class="w-24 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
           <button onclick="contributeCoop()" class="flex-1 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm">Внести в копилку</button>
         </div>
       </div>
     </div>
 
-    <!-- ВКЛАДКА: ИСТОРИЯ ОПЕРАЦИЙ РЕБЕНКА -->
+    <!-- ВКЛАДКА: ИСТОРИЯ ОПЕРАЦИЙ -->
     <div id="view-history" class="p-4 space-y-3 flex-1 hidden">
       <div class="text-xs text-slate-500 font-bold px-1 uppercase tracking-wider">История начислений и списаний</div>
       <div id="child-history-container" class="space-y-2"></div>
@@ -200,45 +205,68 @@
 
     <!-- ВКЛАДКА: ПАНЕЛЬ МАМЫ (КОНТРОЛЬ) -->
     <div id="view-admin" class="p-4 space-y-4 flex-1 hidden">
-      <!-- 1. Заявки на покупку наград -->
+      
+      <!-- 1. Редактирование счетов девочек -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Управление счетами дочек</h3>
+        <div class="grid grid-cols-3 gap-2 text-center" id="admin-balances-grid"></div>
+      </div>
+
+      <!-- 2. Заявки на покупку наград -->
       <div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Запросы на выдачу наград</h3>
         <div id="pending-purchases-container" class="space-y-2"></div>
       </div>
 
-      <!-- 2. Проверка фотоотчетов -->
+      <!-- 3. Проверка фотоотчетов -->
       <div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ожидают проверки мамой</h3>
         <div id="pending-tasks-container" class="space-y-2"></div>
       </div>
 
-      <!-- 3. Управление витриной (Черновики / Скрытие товаров) -->
+      <!-- 4. Добавление товара в маркет мамой -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Витрина товаров (Черновики и скрытие)</h3>
-        <p class="text-[11px] text-slate-400">Скрытые товары не видны дочкам, но сохраняются в базе:</p>
-        <div id="admin-market-manage" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Добавить новый приз в маркет</h3>
+        <div class="flex gap-2">
+          <input id="admin-item-icon" type="text" placeholder="Иконка (напр. 🎟️)" value="🎁" class="w-16 text-center text-sm p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-item-title" type="text" placeholder="Название приза" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+        </div>
+        <div class="flex gap-2">
+          <input id="admin-item-price" type="number" min="40" placeholder="Цена (от 40 🪙)" class="w-32 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-item-stock" type="number" placeholder="Остаток (пусто = безлимит)" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+        </div>
+        <div class="flex justify-between items-center text-xs px-1 text-slate-600">
+          <label class="flex items-center gap-1.5"><input id="admin-item-active" type="checkbox" checked> Сразу активен (виден детям)</label>
+        </div>
+        <button onclick="adminAddMarketItem()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Добавить товар</button>
       </div>
 
-      <!-- 4. Общая история начислений/списаний всех детей -->
+      <!-- 5. Управление витриной и изменение цен -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Настройка товаров и цен</h3>
+        <div id="admin-market-manage" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+      </div>
+
+      <!-- 6. Общая история операций -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center">
-          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">История операций детей</h3>
+          <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">История операций</h3>
           <select id="admin-history-filter" onchange="renderAdminHistory()" class="text-[11px] bg-slate-50 p-1.5 rounded-lg border border-slate-200 outline-none">
-            <option value="all">Все дети</option>
+            <option value="all">Все</option>
             <option value="olya">Оля</option>
             <option value="vera">Вера</option>
             <option value="masha">Маша</option>
           </select>
         </div>
-        <div id="admin-history-container" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+        <div id="admin-history-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- 5. Создание задачи -->
+      <!-- 7. Создание задачи (1-5 монет) -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Назначить новое дело</h3>
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Назначить дело (1-5 монет)</h3>
         <input id="admin-task-title" type="text" placeholder="Что нужно сделать?" class="w-full text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
         <div class="flex gap-2">
-          <input id="admin-task-reward" type="number" placeholder="Монеты" value="15" class="w-24 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-task-reward" type="number" min="1" max="5" placeholder="Монеты (1-5)" value="3" class="w-28 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
           <select id="admin-task-target" class="flex-1 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
             <option value="all">Всем дочкам</option>
             <option value="olya">Оле</option>
@@ -256,9 +284,8 @@
   </div>
 
   <script>
-    const APP_VERSION = "2.2";
+    const APP_VERSION = "3.0";
 
-    // 1. БАЗА ДАННЫХ И ПОЛЬЗОВАТЕЛИ
     const PROFILES = {
       olya: {
         name: "Оля",
@@ -298,17 +325,16 @@
         ring: "ring-4 ring-indigo-500 border-indigo-600",
         dot: "bg-indigo-700 border-indigo-700",
         greeting: "Здравствуйте, Таня! 👑",
-        desc: "Панель управления домом и задачами"
+        desc: "Панель управления домом и наградами"
       }
     };
 
     const PRAISES = [
       "Ты умница!", "Так держать!", "Спасибо, что стараешься!", "Отличная работа!",
-      "Горжусь тобой!", "Супер-результат!", "Идеальный порядок!", "Мама улыбнется, когда увидит!",
-      "Монетки уже в копилке!", "Твой характер становится сильнее!", "Ловко и аккуратно!"
+      "Горжусь тобой!", "Супер-результат!", "Идеальный порядок!", "Мама улыбнется!"
     ];
 
-    // Стартовое состояние с капиталом 50 монет
+    // Стартовая база по новым правилам (задания 1-5, маркет от 40)
     let defaultState = {
       version: APP_VERSION,
       users: {
@@ -316,26 +342,24 @@
         vera: { coins: 50, heldCoins: 0, streak: 4 },
         masha: { coins: 50, heldCoins: 0, streak: 2 }
       },
-      coop: { collected: 450, olya: 200, vera: 150, masha: 100 },
+      coop: { title: "Аквапарк", goal: 1000, collected: 450, olya: 200, vera: 150, masha: 100 },
       tasks: [
-        { id: 1, title: "Заправить постель сразу после сна", reward: 10, target: "all", regular: true, needPhoto: true },
-        { id: 2, title: "Сложить одежду в шкаф аккуратно", reward: 10, target: "all", regular: true, needPhoto: true },
-        { id: 3, title: "Почитать книгу 25 минут", reward: 15, target: "all", regular: true, needPhoto: false },
-        { id: 4, title: "Утренняя зарядка 10 минут", reward: 10, target: "all", regular: true, needPhoto: false },
-        { id: 5, title: "Помыть посуду за собой", reward: 15, target: "all", regular: true, needPhoto: true }
+        { id: 1, title: "Заправить постель сразу после сна", reward: 2, target: "all", regular: true, needPhoto: true },
+        { id: 2, title: "Сложить одежду в шкаф аккуратно", reward: 3, target: "all", regular: true, needPhoto: true },
+        { id: 3, title: "Почитать книгу 25 минут", reward: 4, target: "all", regular: true, needPhoto: false },
+        { id: 4, title: "Утренняя зарядка 10 минут", reward: 2, target: "all", regular: true, needPhoto: false },
+        { id: 5, title: "Помыть посуду за собой", reward: 3, target: "all", regular: true, needPhoto: true }
       ],
       market: [
-        { id: 1, title: "100 рублей карманных", price: 30, icon: "💵", stock: null, cooldown: "none", active: true },
-        { id: 2, title: "Задержаться на прогулке на 30 мин", price: 20, icon: "⏰", stock: null, cooldown: "weekly", active: true },
-        { id: 3, title: "Семейный поход в ресторан", price: 50, icon: "🍕", stock: 1, cooldown: "none", active: true },
-        { id: 4, title: "Вкусное мороженое на выбор", price: 15, icon: "🍦", stock: null, cooldown: "none", active: true },
-        { id: 5, title: "Лечь спать на 1 час позже", price: 25, icon: "🌙", stock: null, cooldown: "weekly", active: true },
-        { id: 6, title: "Мама моет посуду за меня сегодня", price: 35, icon: "🧼", stock: null, cooldown: "weekly", active: true },
-        { id: 7, title: "Любимый молочный коктейль", price: 15, icon: "🥤", stock: null, cooldown: "none", active: true },
-        { id: 8, title: "Сертификат Ozon/WB на 500р", price: 120, icon: "🎁", stock: 2, cooldown: "monthly", active: false } // Черновик по умолчанию
+        { id: 1, title: "Задержаться на прогулке на 30 мин", price: 40, icon: "⏰", stock: null, cooldown: "weekly", active: true },
+        { id: 2, title: "Семейный поход в ресторан", price: 80, icon: "🍕", stock: 1, cooldown: "none", active: true },
+        { id: 3, title: "Вкусное мороженое на выбор", price: 40, icon: "🍦", stock: null, cooldown: "none", active: true },
+        { id: 4, title: "Лечь спать на 1 час позже", price: 45, icon: "🌙", stock: null, cooldown: "weekly", active: true },
+        { id: 5, title: "Мама моет посуду за меня сегодня", price: 50, icon: "🧼", stock: null, cooldown: "weekly", active: true },
+        { id: 6, title: "Сертификат Ozon/WB на 500р", price: 150, icon: "🎁", stock: 2, cooldown: "monthly", active: false }
       ],
       pending: [],
-      taskRevisions: {},
+      taskNotes: {}, // { [taskId_userKey]: { type: 'revision'|'rejected', comment: '...' } }
       purchases: [],
       history: [
         { id: 1, userKey: "olya", title: "Стартовый капитал", amount: 50, type: "income", date: "Сегодня" },
@@ -345,8 +369,6 @@
     };
 
     let state = JSON.parse(localStorage.getItem('oliver_app_state'));
-
-    // Автомиграция данных, если версии не совпадают
     if (!state || state.version !== APP_VERSION) {
       state = defaultState;
       localStorage.setItem('oliver_app_state', JSON.stringify(state));
@@ -356,7 +378,8 @@
     let currentPin = "";
     let currentUser = null;
 
-    let activeRevisionReportId = null;
+    let activeActionReportId = null;
+    let currentActionMode = 'revision'; // 'revision' или 'reject'
     let selectedPresets = [];
 
     function saveState() {
@@ -373,13 +396,13 @@
         userKey,
         title,
         amount,
-        type, // 'income' | 'expense'
+        type,
         date: dateStr
       });
       saveState();
     }
 
-    // 2. АВТОРИЗАЦИЯ И PIN
+    // 2. АВТОРИЗАЦИЯ
     function selectUser(key) {
       activeUserKey = key;
       currentPin = "";
@@ -437,7 +460,7 @@
         document.getElementById('screen-app').classList.remove('hidden');
         initUserApp();
       } else {
-        alert("Неверный PIN-код! Попробуйте снова.");
+        alert("Неверный PIN-код!");
         clearPin();
       }
     }
@@ -453,43 +476,53 @@
       document.getElementById('pin-pad-container').classList.add('opacity-30', 'pointer-events-none');
     }
 
-    // 3. ПРИЛОЖЕНИЕ
+    // 3. ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА
     function initUserApp() {
       const header = document.getElementById('user-header');
       header.className = `p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300 ${currentUser.color}`;
       document.getElementById('user-display-name').innerText = currentUser.name;
 
       const adminTab = document.getElementById('tab-admin');
-      const historyTab = document.getElementById('tab-history');
       const balanceCard = document.getElementById('balance-card');
+      const editCoopBtn = document.getElementById('btn-edit-coop');
+      const coopChildForm = document.getElementById('coop-child-form');
+      const marketMomBadge = document.getElementById('market-mom-badge');
 
       if (currentUser.role === 'mom') {
         adminTab.classList.remove('hidden');
-        historyTab.classList.add('hidden');
         balanceCard.classList.add('hidden');
+        editCoopBtn.classList.remove('hidden');
+        coopChildForm.classList.add('hidden');
+        marketMomBadge.classList.remove('hidden');
         document.getElementById('role-badge').innerText = "Мама / Контроль";
         switchTab('admin');
       } else {
         adminTab.classList.add('hidden');
-        historyTab.classList.remove('hidden');
         balanceCard.classList.remove('hidden');
+        editCoopBtn.classList.add('hidden');
+        coopChildForm.classList.remove('hidden');
+        marketMomBadge.classList.add('hidden');
         document.getElementById('role-badge').innerText = "Дочка";
         updateChildEconomy();
+        checkChildNotifications();
         switchTab('tasks');
+      }
+    }
+
+    function checkChildNotifications() {
+      const userNotes = Object.keys(state.taskNotes || {})
+        .filter(k => k.endsWith(`_${currentUser.key}`))
+        .map(k => state.taskNotes[k]);
+
+      const rejected = userNotes.filter(n => n.type === 'rejected');
+      if (rejected.length > 0) {
+        showPraise(`⚠️ Мама проверила задания: есть отклоненные с комментарием!`);
       }
     }
 
     function updateChildEconomy() {
       const uData = state.users[currentUser.key];
       if (!uData.heldCoins) uData.heldCoins = 0;
-
-      if (uData.coins >= 600) {
-        const penalty = uData.coins * 0.10;
-        uData.coins -= penalty;
-        addHistoryRecord(currentUser.key, "Налог на застой (10%)", penalty, "expense");
-        alert(`Баланс достиг 600 монет! Списано 10% (${penalty.toFixed(1)} 🪙) налога на застой.`);
-        saveState();
-      }
 
       document.getElementById('user-coins-val').innerText = uData.coins.toFixed(1);
       
@@ -504,9 +537,7 @@
       document.getElementById('streak-badge').innerText = `Стрик: ${uData.streak} дн.`;
 
       const depInfo = document.getElementById('deposit-info');
-      if (uData.coins >= 550) {
-        depInfo.innerHTML = "<span class='text-red-200 font-bold'>⚠️ Скоро налог 10%!</span>";
-      } else if (uData.coins >= 300) {
+      if (uData.coins >= 300) {
         depInfo.innerHTML = "<span class='text-emerald-200 font-semibold'>✅ Депозит +1% в день</span>";
       } else {
         depInfo.innerText = "Депозит от 300 монет";
@@ -526,7 +557,7 @@
       if (tab === 'tasks') renderTasks();
       if (tab === 'market') renderMarket();
       if (tab === 'coop') renderCoop();
-      if (tab === 'history') renderChildHistory();
+      if (tab === 'history') renderHistory();
       if (tab === 'admin') renderAdmin();
     }
 
@@ -534,18 +565,22 @@
     function renderTasks() {
       const c = document.getElementById('tasks-container');
       c.innerHTML = "";
-      const list = state.tasks.filter(t => t.target === 'all' || t.target === currentUser.key);
+      const isMom = currentUser.role === 'mom';
+      const list = isMom ? state.tasks : state.tasks.filter(t => t.target === 'all' || t.target === currentUser.key);
 
       list.forEach(t => {
-        const isPending = state.pending.some(p => p.taskId === t.id && p.userKey === currentUser.key);
-        const revisionKey = `${t.id}_${currentUser.key}`;
-        const revisionNote = state.taskRevisions[revisionKey];
+        const userKey = isMom ? 'all' : currentUser.key;
+        const noteKey = `${t.id}_${userKey}`;
+        const note = state.taskNotes ? state.taskNotes[noteKey] : null;
+        const isPending = state.pending.some(p => p.taskId === t.id && (isMom || p.userKey === currentUser.key));
 
         const card = document.createElement('div');
         card.className = "bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2";
         
         let actionArea = "";
-        if (isPending) {
+        if (isMom) {
+          actionArea = `<span class="text-[10px] text-slate-400 font-bold">Для: ${t.target === 'all' ? 'Всех' : PROFILES[t.target].name}</span>`;
+        } else if (isPending) {
           actionArea = `<span class="text-[10px] text-amber-600 bg-amber-50 px-2 py-1 rounded-lg font-bold">На проверке ⏳</span>`;
         } else if (t.needPhoto) {
           actionArea = `
@@ -570,11 +605,11 @@
             </div>
             <div>${actionArea}</div>
           </div>
-          ${revisionNote ? `
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-2.5 text-[11px] text-amber-800 flex items-start gap-1.5">
-              <span>⚠️</span>
+          ${note ? `
+            <div class="${note.type === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800'} border rounded-xl p-2.5 text-[11px] flex items-start gap-1.5">
+              <span>${note.type === 'rejected' ? '❌' : '⚠️'}</span>
               <div>
-                <b>Нужно доделать:</b> ${revisionNote}
+                <b>${note.type === 'rejected' ? 'Задание отклонено мамой:' : 'Нужно доделать:'}</b> ${note.comment}
               </div>
             </div>
           ` : ''}
@@ -594,7 +629,6 @@
             let w = img.width, h = img.height;
             if (w > h && w > maxDimension) { h = Math.round((h * maxDimension) / w); w = maxDimension; }
             else if (h > maxDimension) { w = Math.round((w * maxDimension) / h); h = maxDimension; }
-            
             const canvas = document.createElement('canvas');
             canvas.width = w; canvas.height = h;
             const ctx = canvas.getContext('2d');
@@ -614,7 +648,7 @@
       try {
         const compressedBase64 = await compressImage(file, 1080, 0.8);
         const task = state.tasks.find(t => t.id === taskId);
-        delete state.taskRevisions[`${taskId}_${currentUser.key}`];
+        delete state.taskNotes[`${taskId}_${currentUser.key}`];
 
         state.pending.push({
           id: Date.now(),
@@ -636,7 +670,7 @@
 
     function completeSimpleTask(taskId) {
       const task = state.tasks.find(t => t.id === taskId);
-      delete state.taskRevisions[`${taskId}_${currentUser.key}`];
+      delete state.taskNotes[`${taskId}_${currentUser.key}`];
       rewardUser(currentUser.key, task.reward, task.title);
       showPraise();
       renderTasks();
@@ -650,96 +684,513 @@
       u.coins += total;
       addHistoryRecord(uKey, `Выполнено: ${taskTitle || 'Дело'}`, total, 'income');
       saveState();
-      updateChildEconomy();
+      if (currentUser && currentUser.key === uKey) updateChildEconomy();
     }
 
-    // 5. ПАНЕЛЬ МАМЫ
+    // 5. ПАНЕЛЬ МАМЫ И РЕДАКТИРОВАНИЕ
     function renderAdmin() {
-      // 1. Проверка фото
+      renderAdminBalances();
+      renderPendingTasks();
+      renderPendingPurchases();
+      renderAdminMarketManage();
+      renderAdminHistory();
+    }
+
+    // Редактирование балансов детей мамой
+    function renderAdminBalances() {
+      const container = document.getElementById('admin-balances-grid');
+      container.innerHTML = "";
+      ['olya', 'vera', 'masha'].forEach(key => {
+        const u = state.users[key];
+        const p = PROFILES[key];
+        const col = document.createElement('div');
+        col.className = "bg-slate-50 border border-slate-200 p-2.5 rounded-2xl flex flex-col items-center justify-between";
+        col.innerHTML = `
+          <span class="font-bold text-xs text-slate-700">${p.name}</span>
+          <span class="text-sm font-black text-amber-600 my-1">${u.coins.toFixed(1)} 🪙</span>
+          <button onclick="editChildBalance('${key}')" class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold">Изменить</button>
+        `;
+        container.appendChild(col);
+      });
+    }
+
+    function editChildBalance(userKey) {
+      const u = state.users[userKey];
+      const p = PROFILES[userKey];
+      const val = prompt(`Введите новый баланс для ${p.name}:`, u.coins);
+      if (val !== null) {
+        const num = parseFloat(val);
+        if (!isNaN(num) && num >= 0) {
+          const diff = num - u.coins;
+          u.coins = num;
+          addHistoryRecord(userKey, "Корректировка баланса мамой", Math.abs(diff), diff >= 0 ? 'income' : 'expense');
+          saveState();
+          renderAdminBalances();
+          alert(`Баланс ${p.name} обновлен: ${num} 🪙`);
+        } else {
+          alert("Введите корректное неотрицательное число!");
+        }
+      }
+    }
+
+    // Редактирование семейной копилки мамой
+    function editCoopTarget() {
+      const newTitle = prompt("Название семейной цели:", state.coop.title || "Аквапарк");
+      if (!newTitle) return;
+      const newGoal = prompt("Необходимая сумма (цель):", state.coop.goal || 1000);
+      if (!newGoal) return;
+      const newCollected = prompt("Уже собрано сейчас:", state.coop.collected || 0);
+      if (newCollected === null) return;
+
+      state.coop.title = newTitle;
+      state.coop.goal = Math.max(1, parseFloat(newGoal) || 1000);
+      state.coop.collected = Math.max(0, parseFloat(newCollected) || 0);
+      saveState();
+      renderCoop();
+      alert("Семейная цель успешно обновлена!");
+    }
+
+    function renderPendingTasks() {
       const c = document.getElementById('pending-tasks-container');
       c.innerHTML = "";
       if (state.pending.length === 0) {
         c.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Новых отчетов пока нет 🎉</p>";
-      } else {
-        state.pending.forEach(p => {
-          const card = document.createElement('div');
-          card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2";
-          card.innerHTML = `
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-800">${p.userName} • ${p.taskTitle}</span>
-              <span class="text-amber-500 font-bold">+${p.reward} 🪙</span>
-            </div>
-            <img src="${p.photo}" class="w-full h-44 object-cover rounded-xl border border-slate-100">
-            <div class="flex gap-2 pt-1">
-              <button onclick="approveReport(${p.id})" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Одобрить ✓</button>
-              <button onclick="openRevisionModal(${p.id})" class="flex-1 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold">Нужно доделать ✍️</button>
-            </div>
-          `;
-          c.appendChild(card);
-        });
+        return;
       }
-
-      // 2. Заявки на покупки
-      const purContainer = document.getElementById('pending-purchases-container');
-      purContainer.innerHTML = "";
-      const pendingPurchases = state.purchases.filter(x => x.status === 'pending');
-      
-      if (pendingPurchases.length === 0) {
-        purContainer.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Заявок на награды нет 🎁</p>";
-      } else {
-        pendingPurchases.forEach(pur => {
-          const card = document.createElement('div');
-          card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between";
-          card.innerHTML = `
-            <div>
-              <p class="text-xs font-bold text-slate-800">${pur.userName} запрашивает: <span class="text-indigo-600">${pur.rewardTitle}</span></p>
-              <p class="text-[11px] text-amber-500 font-extrabold mt-0.5">Заморожено: ${pur.price} 🪙</p>
-            </div>
-            <div class="flex gap-1.5">
-              <button onclick="confirmFulfillPurchase(${pur.id})" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-sm">Выдано ✓</button>
-              <button onclick="rejectPurchase(${pur.id})" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold">✕</button>
-            </div>
-          `;
-          purContainer.appendChild(card);
-        });
-      }
-
-      // 3. Управление витриной (Скрытие/активация)
-      renderAdminMarketManage();
-
-      // 4. История операций
-      renderAdminHistory();
+      state.pending.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2";
+        card.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-800">${p.userName} • ${p.taskTitle}</span>
+            <span class="text-amber-500 font-bold">+${p.reward} 🪙</span>
+          </div>
+          <img src="${p.photo}" class="w-full h-44 object-cover rounded-xl border border-slate-100">
+          <div class="grid grid-cols-3 gap-1.5 pt-1">
+            <button onclick="approveReport(${p.id})" class="py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Одобрить ✓</button>
+            <button onclick="openActionModal(${p.id}, 'revision')" class="py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl text-xs font-bold">Доделать ✍️</button>
+            <button onclick="openActionModal(${p.id}, 'reject')" class="py-2 bg-rose-50 text-rose-600 border border-rose-200 rounded-xl text-xs font-bold">Отклонить ✕</button>
+          </div>
+        `;
+        c.appendChild(card);
+      });
     }
 
+    function approveReport(id) {
+      const p = state.pending.find(x => x.id === id);
+      if (!p) return;
+      delete state.taskNotes[`${p.taskId}_${p.userKey}`];
+      rewardUser(p.userKey, p.reward, p.taskTitle);
+      state.pending = state.pending.filter(x => x.id !== id);
+      saveState();
+      renderAdmin();
+      alert(`Задание одобрено! ${p.userName} получила ${p.reward} монет.`);
+    }
+
+    // Модалка: доработка или отклонение с комментарием
+    function openActionModal(reportId, mode) {
+      activeActionReportId = reportId;
+      currentActionMode = mode;
+      selectedPresets = [];
+      document.querySelectorAll('.preset-btn').forEach(b => {
+        b.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all";
+      });
+      document.getElementById('custom-revision-text').value = "";
+      
+      const titleEl = document.getElementById('revision-modal-title');
+      const submitBtn = document.getElementById('btn-submit-action');
+
+      if (mode === 'reject') {
+        titleEl.innerText = "Причина отклонения задания";
+        submitBtn.innerText = "Отклонить с комментарием";
+        submitBtn.className = "flex-1 py-2.5 bg-rose-600 text-white rounded-xl text-xs font-bold shadow-md shadow-rose-200";
+      } else {
+        titleEl.innerText = "Что нужно доделать?";
+        submitBtn.innerText = "Отправить на доработку";
+        submitBtn.className = "flex-1 py-2.5 bg-amber-500 text-white rounded-xl text-xs font-bold shadow-md shadow-amber-200";
+      }
+
+      document.getElementById('modal-revision').classList.remove('hidden');
+    }
+
+    function closeRevisionModal() {
+      activeActionReportId = null;
+      document.getElementById('modal-revision').classList.add('hidden');
+    }
+
+    function togglePreset(btn, text) {
+      if (selectedPresets.includes(text)) {
+        selectedPresets = selectedPresets.filter(t => t !== text);
+        btn.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all";
+      } else {
+        selectedPresets.push(text);
+        btn.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-indigo-600 bg-indigo-50 text-indigo-700 font-bold transition-all";
+      }
+    }
+
+    function confirmRevisionAction() {
+      const p = state.pending.find(x => x.id === activeActionReportId);
+      if (!p) return closeRevisionModal();
+
+      const custom = document.getElementById('custom-revision-text').value.trim();
+      const allComments = [...selectedPresets];
+      if (custom) allComments.push(custom);
+
+      const commentText = allComments.length > 0 ? allComments.join('. ') : (currentActionMode === 'reject' ? 'Задание не принято мамой.' : 'Нужно переделать аккуратнее.');
+
+      if (!state.taskNotes) state.taskNotes = {};
+      state.taskNotes[`${p.taskId}_${p.userKey}`] = {
+        type: currentActionMode === 'reject' ? 'rejected' : 'revision',
+        comment: commentText
+      };
+
+      state.pending = state.pending.filter(x => x.id !== p.id);
+      saveState();
+      closeRevisionModal();
+      renderAdmin();
+      alert(currentActionMode === 'reject' ? `Задание отклонено. ${p.userName} получит комментарий.` : `Отправлено на доработку ${p.userName}.`);
+    }
+
+    // Создание задания (1-5 монет)
+    function adminAddTask() {
+      const title = document.getElementById('admin-task-title').value.trim();
+      const reward = parseInt(document.getElementById('admin-task-reward').value);
+      const target = document.getElementById('admin-task-target').value;
+      const regular = document.getElementById('admin-task-regular').checked;
+      const needPhoto = document.getElementById('admin-task-photo').checked;
+
+      if (!title) return alert("Введите название дела!");
+      if (isNaN(reward) || reward < 1 || reward > 5) {
+        return alert("Стоимость задания должна быть от 1 до 5 монет!");
+      }
+
+      state.tasks.push({ id: Date.now(), title, reward, target, regular, needPhoto });
+      saveState();
+      document.getElementById('admin-task-title').value = "";
+      alert("Дело успешно добавлено!");
+      renderAdmin();
+    }
+
+    // Добавление товара мамой (от 40 монет)
+    function adminAddMarketItem() {
+      const icon = document.getElementById('admin-item-icon').value.trim() || "🎁";
+      const title = document.getElementById('admin-item-title').value.trim();
+      const price = parseFloat(document.getElementById('admin-item-price').value);
+      const stockVal = document.getElementById('admin-item-stock').value.trim();
+      const active = document.getElementById('admin-item-active').checked;
+
+      if (!title) return alert("Введите название награды!");
+      if (isNaN(price) || price < 40) {
+        return alert("Минимальная стоимость покупки на маркетплейсе — 40 монет!");
+      }
+
+      const stock = stockVal ? parseInt(stockVal) : null;
+
+      state.market.push({
+        id: Date.now(),
+        title,
+        price,
+        icon,
+        stock,
+        cooldown: "none",
+        active
+      });
+
+      saveState();
+      document.getElementById('admin-item-title').value = "";
+      document.getElementById('admin-item-price').value = "";
+      document.getElementById('admin-item-stock').value = "";
+      alert("Товар добавлен в маркетплейс!");
+      renderAdminMarketManage();
+    }
+
+    // Редактирование цены и скрытие товаров мамой
     function renderAdminMarketManage() {
       const box = document.getElementById('admin-market-manage');
       box.innerHTML = "";
       state.market.forEach(item => {
         const isActive = item.active !== false;
         const row = document.createElement('div');
-        row.className = "flex items-center justify-between p-2 rounded-xl bg-slate-50 border border-slate-100 text-xs";
+        row.className = "flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs";
         row.innerHTML = `
           <div class="flex items-center gap-2">
-            <span class="text-lg">${item.icon}</span>
+            <span class="text-xl">${item.icon}</span>
             <div>
               <p class="font-bold text-slate-800">${item.title}</p>
-              <span class="text-[10px] text-amber-600 font-semibold">${item.price} 🪙</span>
+              <span class="text-[11px] text-amber-600 font-extrabold">${item.price} 🪙</span>
+              ${item.stock !== null ? `<span class="text-[10px] text-slate-400 ml-1">(${item.stock} шт)</span>` : ''}
             </div>
           </div>
-          <button onclick="toggleRewardActive(${item.id})" class="px-2.5 py-1 rounded-lg text-[10px] font-bold ${isActive ? 'bg-emerald-100 text-emerald-700 border border-emerald-300' : 'bg-slate-200 text-slate-600'}">
-            ${isActive ? '👁️ Активен' : '🙈 Скрыт'}
-          </button>
+          <div class="flex items-center gap-1.5">
+            <button onclick="editMarketItemPrice(${item.id})" class="px-2 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-700">✏️ Цена</button>
+            <button onclick="toggleRewardActive(${item.id})" class="px-2 py-1 rounded-lg font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">
+              ${isActive ? '👁️ Вкл' : '🙈 Скрыт'}
+            </button>
+          </div>
         `;
         box.appendChild(row);
       });
     }
 
-    function toggleRewardActive(rewardId) {
-      const item = state.market.find(x => x.id === rewardId);
+    function editMarketItemPrice(id) {
+      const item = state.market.find(x => x.id === id);
+      if (!item) return;
+      const val = prompt(`Новая цена для "${item.title}" (не менее 40 монет):`, item.price);
+      if (val !== null) {
+        const p = parseFloat(val);
+        if (!isNaN(p) && p >= 40) {
+          item.price = p;
+          saveState();
+          renderAdminMarketManage();
+          alert(`Цена изменена на ${p} 🪙`);
+        } else {
+          alert("Цена товара не может быть меньше 40 монет!");
+        }
+      }
+    }
+
+    function toggleRewardActive(id) {
+      const item = state.market.find(x => x.id === id);
       if (!item) return;
       item.active = !item.active;
       saveState();
       renderAdminMarketManage();
+    }
+
+    function renderPendingPurchases() {
+      const purContainer = document.getElementById('pending-purchases-container');
+      purContainer.innerHTML = "";
+      const pendingPurchases = state.purchases.filter(x => x.status === 'pending');
+      
+      if (pendingPurchases.length === 0) {
+        purContainer.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Заявок на награды нет 🎁</p>";
+        return;
+      }
+
+      pendingPurchases.forEach(pur => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between";
+        card.innerHTML = `
+          <div>
+            <p class="text-xs font-bold text-slate-800">${pur.userName}: <span class="text-indigo-600">${pur.rewardTitle}</span></p>
+            <p class="text-[11px] text-amber-500 font-extrabold mt-0.5">Заморожено: ${pur.price} 🪙</p>
+          </div>
+          <div class="flex gap-1.5">
+            <button onclick="confirmFulfillPurchase(${pur.id})" class="px-3 py-1.5 bg-emerald-600 text-white rounded-xl text-xs font-bold shadow-sm">Выдано ✓</button>
+            <button onclick="rejectPurchase(${pur.id})" class="px-2.5 py-1.5 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold">✕</button>
+          </div>
+        `;
+        purContainer.appendChild(card);
+      });
+    }
+
+    function confirmFulfillPurchase(purchaseId) {
+      const pur = state.purchases.find(p => p.id === purchaseId);
+      if (!pur) return;
+      const u = state.users[pur.userKey];
+      u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
+      pur.status = 'completed';
+      saveState();
+      renderAdmin();
+      alert(`Приз "${pur.rewardTitle}" вручен!`);
+    }
+
+    function rejectPurchase(purchaseId) {
+      const pur = state.purchases.find(p => p.id === purchaseId);
+      if (!pur) return;
+      const u = state.users[pur.userKey];
+      u.coins += pur.price;
+      u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
+
+      const m = state.market.find(x => x.id === pur.rewardId);
+      if (m && m.stock !== null) m.stock += 1;
+
+      pur.status = 'cancelled';
+      addHistoryRecord(pur.userKey, `Возврат за отмену: ${pur.rewardTitle}`, pur.price, 'income');
+      saveState();
+      renderAdmin();
+      alert(`Заявка отклонена. ${pur.price} монет возвращены на счет.`);
+    }
+
+    // 6. МАРКЕТПЛЕЙС
+    function renderMarket() {
+      const isMom = currentUser.role === 'mom';
+      const u = isMom ? null : state.users[currentUser.key];
+      const ordersBox = document.getElementById('child-orders-container');
+      ordersBox.innerHTML = "";
+
+      if (!isMom) {
+        const myPending = state.purchases.filter(p => p.userKey === currentUser.key && p.status === 'pending');
+        if (myPending.length > 0) {
+          ordersBox.classList.remove('hidden');
+          ordersBox.innerHTML = "<div class='text-xs font-bold text-slate-500'>ОЖИДАЮТ ВРУЧЕНИЯ МАМОЙ:</div>";
+          myPending.forEach(p => {
+            ordersBox.innerHTML += `
+              <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs flex justify-between items-center">
+                <span>🎁 <b>${p.rewardTitle}</b></span>
+                <span class="text-amber-700 font-bold bg-amber-100/80 px-2 py-0.5 rounded-md">Монеты на холде ⏳</span>
+              </div>
+            `;
+          });
+        } else {
+          ordersBox.classList.add('hidden');
+        }
+      } else {
+        ordersBox.classList.add('hidden');
+      }
+
+      const c = document.getElementById('market-container');
+      c.innerHTML = "";
+
+      // Мама видит все товары (включая черновики), дети — только активные
+      const visibleMarket = isMom ? state.market : state.market.filter(m => m.active !== false);
+
+      visibleMarket.forEach(m => {
+        let isBlocked = false;
+        let blockReason = "";
+
+        if (!isMom) {
+          if (m.stock !== null && m.stock <= 0) {
+            isBlocked = true;
+            blockReason = "Закончилось";
+          }
+          if (!isBlocked && m.cooldown && m.cooldown !== 'none') {
+            const limitDays = m.cooldown === 'weekly' ? 7 : 30;
+            const cutoff = Date.now() - (limitDays * 24 * 60 * 60 * 1000);
+            const hasRecent = state.purchases.some(p => 
+              p.userKey === currentUser.key && 
+              p.rewardId === m.id && 
+              p.status !== 'cancelled' && 
+              p.timestamp > cutoff
+            );
+            if (hasRecent) {
+              isBlocked = true;
+              blockReason = m.cooldown === 'weekly' ? "Раз в неделю" : "Раз в месяц";
+            }
+          }
+        }
+
+        const canAfford = isMom ? true : u.coins >= m.price;
+        const disabled = isBlocked || (!isMom && !canAfford);
+
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-1">
+              <span class="text-2xl">${m.icon}</span>
+              ${m.stock !== null ? `<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">Осталось: ${m.stock}</span>` : ''}
+            </div>
+            <p class="text-xs font-bold text-slate-800 leading-tight">${m.title}</p>
+            ${isMom && !m.active ? `<span class="text-[9px] text-amber-600 font-bold block mt-1">Черновик (скрыт)</span>` : ''}
+            ${isBlocked ? `<span class="text-[10px] text-rose-500 font-bold block mt-1">🔒 ${blockReason}</span>` : ''}
+          </div>
+          <div class="mt-3 flex items-center justify-between">
+            <span class="text-xs font-black text-amber-500">${m.price} 🪙</span>
+            ${isMom ? `
+              <button onclick="switchTab('admin')" class="px-2 py-1 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-600">Настроить</button>
+            ` : `
+              <button onclick="requestRewardPurchase(${m.id})" class="px-2.5 py-1 rounded-xl text-[11px] font-bold ${!disabled ? 'bg-indigo-600 text-white active:scale-95' : 'bg-slate-100 text-slate-400'}" ${disabled ? 'disabled' : ''}>
+                Купить
+              </button>
+            `}
+          </div>
+        `;
+        c.appendChild(card);
+      });
+    }
+
+    function requestRewardPurchase(rewardId) {
+      const m = state.market.find(x => x.id === rewardId);
+      const u = state.users[currentUser.key];
+
+      if (u.coins < m.price) return alert("Недостаточно монет на балансе!");
+
+      if (confirm(`Запросить награду "${m.title}" за ${m.price} монет? Монеты заморозятся до вручения мамой.`)) {
+        u.coins -= m.price;
+        u.heldCoins = (u.heldCoins || 0) + m.price;
+
+        if (m.stock !== null) m.stock -= 1;
+
+        state.purchases.push({
+          id: Date.now(),
+          rewardId: m.id,
+          rewardTitle: m.title,
+          price: m.price,
+          userKey: currentUser.key,
+          userName: currentUser.name,
+          timestamp: Date.now(),
+          status: 'pending'
+        });
+
+        addHistoryRecord(currentUser.key, `Запрос приза: ${m.title}`, m.price, 'expense');
+        saveState();
+        updateChildEconomy();
+        renderMarket();
+        alert(`🎉 Заявка отправлена маме!`);
+      }
+    }
+
+    // 7. СЕМЕЙНАЯ КОПИЛКА
+    function renderCoop() {
+      const goal = state.coop.goal || 1000;
+      document.getElementById('coop-title-display').innerText = `🌊 Семейная цель: ${state.coop.title || 'Аквапарк'}`;
+      document.getElementById('coop-collected').innerText = state.coop.collected;
+      document.getElementById('coop-goal').innerText = goal;
+      document.getElementById('coop-olya').innerText = state.coop.olya;
+      document.getElementById('coop-vera').innerText = state.coop.vera;
+      document.getElementById('coop-masha').innerText = state.coop.masha;
+      
+      const pct = Math.min(100, Math.round((state.coop.collected / goal) * 100));
+      document.getElementById('coop-progress-bar').style.width = pct + "%";
+    }
+
+    function contributeCoop() {
+      const inp = document.getElementById('coop-input');
+      const val = parseFloat(inp.value);
+      const u = state.users[currentUser.key];
+      if (!val || val <= 0) return alert("Введите сумму!");
+      if (u.coins < val) return alert("У вас нет столько монет!");
+
+      u.coins -= val;
+      state.coop.collected += val;
+      state.coop[currentUser.key] += val;
+      addHistoryRecord(currentUser.key, `Вклад в общую копилку (${state.coop.title})`, val, 'expense');
+
+      saveState();
+      inp.value = "";
+      updateChildEconomy();
+      renderCoop();
+      showPraise("Спасибо за вклад в семейную поездку!");
+    }
+
+    // 8. ИСТОРИЯ
+    function renderHistory() {
+      const box = document.getElementById('child-history-container');
+      box.innerHTML = "";
+      const isMom = currentUser.role === 'mom';
+      const myHistory = isMom ? (state.history || []) : (state.history || []).filter(h => h.userKey === currentUser.key);
+
+      if (myHistory.length === 0) {
+        box.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>История пока пуста ✨</p>";
+        return;
+      }
+
+      myHistory.forEach(h => {
+        const isInc = h.type === 'income';
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center";
+        card.innerHTML = `
+          <div>
+            <p class="text-xs font-bold text-slate-800">${isMom ? `[${PROFILES[h.userKey]?.name}] ` : ''}${h.title}</p>
+            <p class="text-[10px] text-slate-400 mt-0.5">${h.date}</p>
+          </div>
+          <div class="text-sm font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
+            ${isInc ? '+' : '-'}${h.amount} 🪙
+          </div>
+        `;
+        box.appendChild(card);
+      });
     }
 
     function renderAdminHistory() {
@@ -748,9 +1199,7 @@
       box.innerHTML = "";
 
       let list = state.history || [];
-      if (filter !== 'all') {
-        list = list.filter(h => h.userKey === filter);
-      }
+      if (filter !== 'all') list = list.filter(h => h.userKey === filter);
 
       if (list.length === 0) {
         box.innerHTML = "<p class='text-xs text-slate-400 text-center py-3'>История пока пуста</p>";
@@ -773,280 +1222,6 @@
         `;
         box.appendChild(el);
       });
-    }
-
-    function renderChildHistory() {
-      const box = document.getElementById('child-history-container');
-      box.innerHTML = "";
-
-      const myHistory = (state.history || []).filter(h => h.userKey === currentUser.key);
-      if (myHistory.length === 0) {
-        box.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Тут будут твои заработанные и потраченные монеты ✨</p>";
-        return;
-      }
-
-      myHistory.forEach(h => {
-        const isInc = h.type === 'income';
-        const card = document.createElement('div');
-        card.className = "bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center";
-        card.innerHTML = `
-          <div>
-            <p class="text-xs font-bold text-slate-800">${h.title}</p>
-            <p class="text-[10px] text-slate-400 mt-0.5">${h.date}</p>
-          </div>
-          <div class="text-sm font-black ${isInc ? 'text-emerald-600' : 'text-rose-600'}">
-            ${isInc ? '+' : '-'}${h.amount} 🪙
-          </div>
-        `;
-        box.appendChild(card);
-      });
-    }
-
-    function approveReport(id) {
-      const p = state.pending.find(x => x.id === id);
-      if (!p) return;
-      delete state.taskRevisions[`${p.taskId}_${p.userKey}`];
-      rewardUser(p.userKey, p.reward, p.taskTitle);
-      state.pending = state.pending.filter(x => x.id !== id);
-      saveState();
-      renderAdmin();
-      alert(`Задание одобрено! ${p.userName} получила ${p.reward} монет.`);
-    }
-
-    function openRevisionModal(reportId) {
-      activeRevisionReportId = reportId;
-      selectedPresets = [];
-      document.querySelectorAll('.preset-btn').forEach(b => {
-        b.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all";
-      });
-      document.getElementById('custom-revision-text').value = "";
-      document.getElementById('modal-revision').classList.remove('hidden');
-    }
-
-    function closeRevisionModal() {
-      activeRevisionReportId = null;
-      document.getElementById('modal-revision').classList.add('hidden');
-    }
-
-    function togglePreset(btn, text) {
-      if (selectedPresets.includes(text)) {
-        selectedPresets = selectedPresets.filter(t => t !== text);
-        btn.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all";
-      } else {
-        selectedPresets.push(text);
-        btn.className = "preset-btn text-[11px] px-3 py-1.5 rounded-full border border-indigo-600 bg-indigo-50 text-indigo-700 font-bold transition-all";
-      }
-    }
-
-    function confirmRevision() {
-      const p = state.pending.find(x => x.id === activeRevisionReportId);
-      if (!p) return closeRevisionModal();
-
-      const custom = document.getElementById('custom-revision-text').value.trim();
-      const allComments = [...selectedPresets];
-      if (custom) allComments.push(custom);
-
-      if (allComments.length === 0) {
-        return alert("Выберите замечание или напишите свой комментарий!");
-      }
-
-      const finalComment = allComments.join('. ');
-      state.taskRevisions[`${p.taskId}_${p.userKey}`] = finalComment;
-      state.pending = state.pending.filter(x => x.id !== p.id);
-      saveState();
-      closeRevisionModal();
-      renderAdmin();
-      alert(`Задание возвращено ${p.userName} со статусом «Нужно доделать».`);
-    }
-
-    function adminAddTask() {
-      const title = document.getElementById('admin-task-title').value.trim();
-      const reward = parseFloat(document.getElementById('admin-task-reward').value) || 10;
-      const target = document.getElementById('admin-task-target').value;
-      const regular = document.getElementById('admin-task-regular').checked;
-      const needPhoto = document.getElementById('admin-task-photo').checked;
-
-      if (!title) return alert("Введите название дела!");
-
-      state.tasks.push({ id: Date.now(), title, reward, target, regular, needPhoto });
-      saveState();
-      document.getElementById('admin-task-title').value = "";
-      alert("Поручение успешно опубликовано!");
-    }
-
-    // 6. МАРКЕТПЛЕЙС И ПОКУПКИ
-    function renderMarket() {
-      const u = state.users[currentUser.key];
-      const ordersBox = document.getElementById('child-orders-container');
-      ordersBox.innerHTML = "";
-
-      const myPending = state.purchases.filter(p => p.userKey === currentUser.key && p.status === 'pending');
-      if (myPending.length > 0) {
-        ordersBox.classList.remove('hidden');
-        ordersBox.innerHTML = "<div class='text-xs font-bold text-slate-500'>ОЖИДАЮТ ВРУЧЕНИЯ МАМОЙ:</div>";
-        myPending.forEach(p => {
-          ordersBox.innerHTML += `
-            <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl text-xs flex justify-between items-center">
-              <span>🎁 <b>${p.rewardTitle}</b></span>
-              <span class="text-amber-700 font-bold bg-amber-100/80 px-2 py-0.5 rounded-md">Монеты на холде ⏳</span>
-            </div>
-          `;
-        });
-      } else {
-        ordersBox.classList.add('hidden');
-      }
-
-      const c = document.getElementById('market-container');
-      c.innerHTML = "";
-
-      // Фильтруем только активные товары (скрытые не показываются детям)
-      const visibleMarket = state.market.filter(m => m.active !== false);
-
-      visibleMarket.forEach(m => {
-        let isBlocked = false;
-        let blockReason = "";
-
-        if (m.stock !== null && m.stock <= 0) {
-          isBlocked = true;
-          blockReason = "Закончилось";
-        }
-
-        if (!isBlocked && m.cooldown && m.cooldown !== 'none') {
-          const limitDays = m.cooldown === 'weekly' ? 7 : 30;
-          const cutoff = Date.now() - (limitDays * 24 * 60 * 60 * 1000);
-          const hasRecent = state.purchases.some(p => 
-            p.userKey === currentUser.key && 
-            p.rewardId === m.id && 
-            p.status !== 'cancelled' && 
-            p.timestamp > cutoff
-          );
-
-          if (hasRecent) {
-            isBlocked = true;
-            blockReason = m.cooldown === 'weekly' ? "Раз в неделю" : "Раз в месяц";
-          }
-        }
-
-        const canAfford = u.coins >= m.price;
-        const disabled = isBlocked || !canAfford;
-
-        const card = document.createElement('div');
-        card.className = "bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between";
-        card.innerHTML = `
-          <div>
-            <div class="flex justify-between items-start mb-1">
-              <span class="text-2xl">${m.icon}</span>
-              ${m.stock !== null ? `<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">Осталось: ${m.stock}</span>` : ''}
-            </div>
-            <p class="text-xs font-bold text-slate-800 leading-tight">${m.title}</p>
-            ${isBlocked ? `<span class="text-[10px] text-rose-500 font-bold block mt-1">🔒 ${blockReason}</span>` : ''}
-          </div>
-          <div class="mt-3 flex items-center justify-between">
-            <span class="text-xs font-black text-amber-500">${m.price} 🪙</span>
-            <button onclick="requestRewardPurchase(${m.id})" class="px-2.5 py-1 rounded-xl text-[11px] font-bold ${!disabled ? 'bg-indigo-600 text-white active:scale-95' : 'bg-slate-100 text-slate-400'}" ${disabled ? 'disabled' : ''}>
-              Купить
-            </button>
-          </div>
-        `;
-        c.appendChild(card);
-      });
-    }
-
-    function requestRewardPurchase(rewardId) {
-      const m = state.market.find(x => x.id === rewardId);
-      const u = state.users[currentUser.key];
-
-      if (u.coins < m.price) return alert("Недостаточно монет на балансе!");
-
-      if (confirm(`Запросить награду "${m.title}" за ${m.price} монет? Монеты заморозятся до вручения приза мамой.`)) {
-        u.coins -= m.price;
-        u.heldCoins = (u.heldCoins || 0) + m.price;
-
-        if (m.stock !== null) {
-          m.stock -= 1;
-        }
-
-        state.purchases.push({
-          id: Date.now(),
-          rewardId: m.id,
-          rewardTitle: m.title,
-          price: m.price,
-          userKey: currentUser.key,
-          userName: currentUser.name,
-          timestamp: Date.now(),
-          status: 'pending'
-        });
-
-        addHistoryRecord(currentUser.key, `Запрос приза: ${m.title}`, m.price, 'expense');
-
-        saveState();
-        updateChildEconomy();
-        renderMarket();
-        alert(`🎉 Заявка отправлена маме! Монеты заморожены до вручения.`);
-      }
-    }
-
-    function confirmFulfillPurchase(purchaseId) {
-      const pur = state.purchases.find(p => p.id === purchaseId);
-      if (!pur) return;
-
-      const u = state.users[pur.userKey];
-      u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
-      pur.status = 'completed';
-
-      saveState();
-      renderAdmin();
-      alert(`Приз "${pur.rewardTitle}" вручен! Замороженные монеты окончательно списаны.`);
-    }
-
-    function rejectPurchase(purchaseId) {
-      const pur = state.purchases.find(p => p.id === purchaseId);
-      if (!pur) return;
-
-      const u = state.users[pur.userKey];
-      u.coins += pur.price;
-      u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
-
-      const m = state.market.find(x => x.id === pur.rewardId);
-      if (m && m.stock !== null) {
-        m.stock += 1;
-      }
-
-      pur.status = 'cancelled';
-      addHistoryRecord(pur.userKey, `Возврат за: ${pur.rewardTitle}`, pur.price, 'income');
-
-      saveState();
-      renderAdmin();
-      alert(`Заявка отклонена. ${pur.price} монет возвращены на баланс ${pur.userName}.`);
-    }
-
-    // 7. СЕМЕЙНАЯ КОПИЛКА
-    function renderCoop() {
-      document.getElementById('coop-collected').innerText = state.coop.collected;
-      document.getElementById('coop-olya').innerText = state.coop.olya;
-      document.getElementById('coop-vera').innerText = state.coop.vera;
-      document.getElementById('coop-masha').innerText = state.coop.masha;
-      const pct = Math.min(100, Math.round((state.coop.collected / 1000) * 100));
-      document.getElementById('coop-progress-bar').style.width = pct + "%";
-    }
-
-    function contributeCoop() {
-      const inp = document.getElementById('coop-input');
-      const val = parseFloat(inp.value);
-      const u = state.users[currentUser.key];
-      if (!val || val <= 0) return alert("Введите сумму!");
-      if (u.coins < val) return alert("У вас нет столько монет!");
-
-      u.coins -= val;
-      state.coop.collected += val;
-      state.coop[currentUser.key] += val;
-      addHistoryRecord(currentUser.key, "Вклад в общую копилку (Аквапарк)", val, 'expense');
-
-      saveState();
-      inp.value = "";
-      updateChildEconomy();
-      renderCoop();
-      showPraise("Спасибо за вклад в семейную поездку!");
     }
 
     function showPraise(customText) {
