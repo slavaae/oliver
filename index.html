@@ -14,8 +14,14 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans select-none">
 
+  <!-- ИНДИКАТОР СВЯЗИ (ОНЛАЙН / ОФЛАЙН) -->
+  <div id="connection-status" class="fixed top-2 right-3 z-50 text-[10px] font-bold px-2.5 py-1 rounded-full bg-slate-900/80 text-white shadow-sm flex items-center gap-1.5 backdrop-blur-md">
+    <span id="status-dot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="status-text">Онлайн</span>
+  </div>
+
   <!-- ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ -->
-  <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2.5 max-w-[90vw] text-center border border-white/10">
+  <div id="toast" class="fixed top-12 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2.5 max-w-[90vw] text-center border border-white/10">
     <span class="text-base">✨</span>
     <span id="toast-text">Отличная работа!</span>
   </div>
@@ -145,7 +151,6 @@
 
   <!-- 2. ОСНОВНОЙ РАБОЧИЙ ЭКРАН -->
   <div id="screen-app" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-6">
-    <!-- Шапка профиля -->
     <div id="user-header" class="p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300">
       <div class="flex justify-between items-center mb-3">
         <div>
@@ -155,7 +160,6 @@
         <button onclick="logout()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl font-semibold">Сменить</button>
       </div>
 
-      <!-- Карточка баланса ребенка -->
       <div id="balance-card" class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 flex justify-between items-center border border-white/10">
         <div>
           <p class="text-[11px] text-white/80">Твой баланс</p>
@@ -168,7 +172,7 @@
       </div>
     </div>
 
-    <!-- Вкладки навигации -->
+    <!-- Навигация -->
     <div class="flex border-b border-slate-200 bg-white px-2 text-xs font-medium text-slate-500 justify-around sticky top-0 z-20 overflow-x-auto">
       <button onclick="switchTab('tasks')" id="tab-tasks" class="nav-tab active py-3 px-2">Задания</button>
       <button onclick="switchTab('market')" id="tab-market" class="nav-tab py-3 px-2">Награды</button>
@@ -192,10 +196,7 @@
         <span class="text-xs text-slate-500 font-bold">ВИТРИНА НАГРАД (ОТ 40 🪙)</span>
         <span id="market-mom-badge" class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full font-bold hidden">Режим мамы</span>
       </div>
-      
-      <!-- Заказы ребенка в ожидании -->
       <div id="child-orders-container" class="space-y-2 hidden"></div>
-
       <div id="market-container" class="grid grid-cols-2 gap-2.5"></div>
     </div>
 
@@ -229,39 +230,34 @@
       </div>
     </div>
 
-    <!-- ВКЛАДКА: ИСТОРИЯ ОПЕРАЦИЙ -->
+    <!-- ВКЛАДКА: ИСТОРИЯ -->
     <div id="view-history" class="p-4 space-y-3 flex-1 hidden">
       <div class="text-xs text-slate-500 font-bold px-1 uppercase tracking-wider">История начислений и списаний</div>
       <div id="child-history-container" class="space-y-2"></div>
     </div>
 
-    <!-- ВКЛАДКА: ПАНЕЛЬ МАМЫ (КОНТРОЛЬ) -->
+    <!-- ВКЛАДКА: ПАНЕЛЬ МАМЫ -->
     <div id="view-admin" class="p-4 space-y-4 flex-1 hidden">
-      
-      <!-- 1. Редактирование счетов девочек с комментарием -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Управление счетами дочек</h3>
         <p class="text-[11px] text-slate-400">При изменении баланса укажите причину — она запишется в историю:</p>
         <div class="grid grid-cols-3 gap-2 text-center" id="admin-balances-grid"></div>
       </div>
 
-      <!-- 2. Заявки на покупку наград -->
       <div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Запросы на выдачу наград</h3>
         <div id="pending-purchases-container" class="space-y-2"></div>
       </div>
 
-      <!-- 3. Проверка фотоотчетов -->
       <div>
         <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ожидают проверки мамой</h3>
         <div id="pending-tasks-container" class="space-y-2"></div>
       </div>
 
-      <!-- 4. Добавление новой награды в маркет -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Добавить новый приз в маркет</h3>
         <div class="flex gap-2">
-          <input id="admin-item-icon" type="text" placeholder="Иконка (напр. 🎟️)" value="🎁" class="w-16 text-center text-sm p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-item-icon" type="text" placeholder="Иконка" value="🎁" class="w-16 text-center text-sm p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
           <input id="admin-item-title" type="text" placeholder="Название приза" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
         </div>
         <div class="flex gap-2">
@@ -269,18 +265,16 @@
           <input id="admin-item-stock" type="number" placeholder="Остаток (пусто = безлимит)" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
         </div>
         <div class="flex justify-between items-center text-xs px-1 text-slate-600">
-          <label class="flex items-center gap-1.5"><input id="admin-item-active" type="checkbox" checked> Сразу активен (виден детям)</label>
+          <label class="flex items-center gap-1.5"><input id="admin-item-active" type="checkbox" checked> Сразу активен</label>
         </div>
         <button onclick="adminAddMarketItem()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Добавить товар</button>
       </div>
 
-      <!-- 5. Управление и редактирование уже существующих наград -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Управление и правка наград</h3>
         <div id="admin-market-manage" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- 6. Общая история операций -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <div class="flex justify-between items-center">
           <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">История операций</h3>
@@ -294,7 +288,6 @@
         <div id="admin-history-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- 7. Создание дела (1-5 монет) -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Назначить дело (1-5 монет)</h3>
         <div class="flex gap-2">
@@ -319,13 +312,98 @@
     </div>
   </div>
 
-  <script>
-    const APP_VERSION = "4.0";
+  <!-- ПОДКЛЮЧЕНИЕ FIREBASE С ОФЛАЙН-РЕЖИМОМ -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+      getFirestore, 
+      doc, 
+      setDoc, 
+      onSnapshot, 
+      enableIndexedDbPersistence 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    // Вставьте ваши ключи из Firebase Console:
+    const firebaseConfig = {
+      apiKey: "AIzaSyDV7B8apC1rcgugqaz2HPCkZ6kCjdBbZtQ",
+    authDomain: "oliver-315e7.firebaseapp.com",
+    projectId: "oliver-315e7",
+    storageBucket: "oliver-315e7.firebasestorage.app",
+    messagingSenderId: "783883652201",
+    appId: "1:783883652201:web:ccd8411fc2b3ce7318e6f8",
+    measurementId: "G-HKZK56NP3B"
+    };
+
+    let db = null;
+    let syncDocRef = null;
+
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+      try {
+        const app = initializeApp(firebaseConfig);
+        db = getFirestore(app);
+
+        // Включение сохранения в IndexedDB для работы без интернета
+        enableIndexedDbPersistence(db).catch((err) => {
+          if (err.code === 'failed-precondition') {
+            console.warn("Множество вкладок открыто, офлайн-режим активен для первой вкладки.");
+          } else if (err.code === 'unimplemented') {
+            console.warn("Браузер не поддерживает офлайн-хранилище IndexedDB.");
+          }
+        });
+
+        syncDocRef = doc(db, "family", "oliver_shared_state");
+
+        // Слушатель онлайн/офлайн обновлений в реальном времени
+        onSnapshot(syncDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            const remoteData = docSnap.data();
+            if (remoteData && remoteData.version === window.APP_VERSION) {
+              window.state = remoteData;
+              localStorage.setItem('oliver_app_state', JSON.stringify(window.state));
+              if (window.currentUser) {
+                window.refreshCurrentUI();
+              }
+            }
+          }
+        });
+      } catch (e) {
+        console.error("Ошибка инициализации Firebase:", e);
+      }
+    }
+
+    // Экспорт функции синхронизации в глобальную область
+    window.syncCloudState = async function() {
+      localStorage.setItem('oliver_app_state', JSON.stringify(window.state));
+      if (syncDocRef) {
+        try {
+          // Firestore автоматически поместит запись в локальную очередь, если нет связи
+          await setDoc(syncDocRef, window.state);
+        } catch (err) {
+          console.log("Сохранено в локальную очередь до появления интернета:", err.message);
+        }
+      }
+    };
+  </script>
+
+  <!-- ОСНОВНАЯ ЛОГИКА ПРИЛОЖЕНИЯ -->
+  <script>
+    window.APP_VERSION = "5.0";
+
+    // НОВЫЕ ПАРОЛИ
     const PROFILES = {
+      mom: {
+        name: "Мама Таня",
+        pin: "1235", // Новый PIN мамы
+        role: "mom",
+        color: "bg-indigo-700",
+        ring: "ring-4 ring-indigo-500 border-indigo-600",
+        dot: "bg-indigo-700 border-indigo-700",
+        greeting: "Здравствуйте, Таня! 👑",
+        desc: "Панель управления домом и наградами"
+      },
       olya: {
         name: "Оля",
-        pin: "2703",
+        pin: "1379", // Новый PIN Оли
         role: "child",
         color: "bg-purple-600",
         ring: "ring-4 ring-purple-400 border-purple-500",
@@ -335,7 +413,7 @@
       },
       vera: {
         name: "Вера",
-        pin: "0852",
+        pin: "0852", // Новый PIN Веры
         role: "child",
         color: "bg-amber-500",
         ring: "ring-4 ring-amber-400 border-amber-500",
@@ -345,23 +423,13 @@
       },
       masha: {
         name: "Маша",
-        pin: "2212",
+        pin: "9876", // Новый PIN Маши
         role: "child",
         color: "bg-emerald-600",
         ring: "ring-4 ring-emerald-400 border-emerald-500",
         dot: "bg-emerald-600 border-emerald-600",
         greeting: "Привет, Машуля! 🌈",
         desc: "Солнечное утро и радужный топ!"
-      },
-      mom: {
-        name: "Мама Таня",
-        pin: "4455",
-        role: "mom",
-        color: "bg-indigo-700",
-        ring: "ring-4 ring-indigo-500 border-indigo-600",
-        dot: "bg-indigo-700 border-indigo-700",
-        greeting: "Здравствуйте, Таня! 👑",
-        desc: "Панель управления домом и наградами"
       }
     };
 
@@ -370,9 +438,8 @@
       "Горжусь тобой!", "Супер-результат!", "Идеальный порядок!", "Мама улыбнется!"
     ];
 
-    // Начальная база
     let defaultState = {
-      version: APP_VERSION,
+      version: window.APP_VERSION,
       users: {
         olya: { coins: 50, heldCoins: 0, streak: 7, lastDepositDate: null },
         vera: { coins: 50, heldCoins: 0, streak: 4, lastDepositDate: null },
@@ -404,33 +471,53 @@
       ]
     };
 
-    let state = JSON.parse(localStorage.getItem('oliver_app_state'));
-    if (!state || state.version !== APP_VERSION) {
-      state = defaultState;
-      localStorage.setItem('oliver_app_state', JSON.stringify(state));
+    window.state = JSON.parse(localStorage.getItem('oliver_app_state'));
+    if (!window.state || window.state.version !== window.APP_VERSION) {
+      window.state = defaultState;
+      localStorage.setItem('oliver_app_state', JSON.stringify(window.state));
     }
 
     let activeUserKey = null;
     let currentPin = "";
-    let currentUser = null;
+    window.currentUser = null;
 
     let activeActionReportId = null;
     let currentActionMode = 'revision';
     let selectedPresets = [];
 
+    // Отслеживание онлайн/офлайн статуса браузера
+    function updateOnlineStatus() {
+      const dot = document.getElementById('status-dot');
+      const txt = document.getElementById('status-text');
+      if (navigator.onLine) {
+        dot.className = "w-2 h-2 rounded-full bg-emerald-400";
+        txt.innerText = "Онлайн";
+      } else {
+        dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-pulse";
+        txt.innerText = "Офлайн (локально)";
+      }
+    }
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+
     function saveState() {
-      localStorage.setItem('oliver_app_state', JSON.stringify(state));
+      if (window.syncCloudState) {
+        window.syncCloudState();
+      } else {
+        localStorage.setItem('oliver_app_state', JSON.stringify(window.state));
+      }
     }
 
     function addHistoryRecord(userKey, title, amount, type, customComment = "") {
-      if (!state.history) state.history = [];
+      if (!window.state.history) window.state.history = [];
       const now = new Date();
       const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) + ', ' + 
                       now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       
       const fullTitle = customComment ? `${title} («${customComment}»)` : title;
 
-      state.history.unshift({
+      window.state.history.unshift({
         id: Date.now() + Math.random(),
         userKey,
         title: fullTitle,
@@ -441,7 +528,6 @@
       saveState();
     }
 
-    // 2. АВТОРИЗАЦИЯ
     function selectUser(key) {
       activeUserKey = key;
       currentPin = "";
@@ -494,7 +580,7 @@
     function checkPin() {
       const p = PROFILES[activeUserKey];
       if (currentPin === p.pin) {
-        currentUser = { ...p, key: activeUserKey };
+        window.currentUser = { ...p, key: activeUserKey };
         document.getElementById('screen-welcome').classList.add('hidden');
         document.getElementById('screen-app').classList.remove('hidden');
         initUserApp();
@@ -505,7 +591,7 @@
     }
 
     function logout() {
-      currentUser = null;
+      window.currentUser = null;
       activeUserKey = null;
       clearPin();
       document.getElementById('screen-app').classList.add('hidden');
@@ -515,11 +601,10 @@
       document.getElementById('pin-pad-container').classList.add('opacity-30', 'pointer-events-none');
     }
 
-    // 3. ИНИЦИАЛИЗАЦИЯ И ЭКОНОМИКА (ДЕПОЗИТ И НАЛОГ)
     function initUserApp() {
       const header = document.getElementById('user-header');
-      header.className = `p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300 ${currentUser.color}`;
-      document.getElementById('user-display-name').innerText = currentUser.name;
+      header.className = `p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300 ${window.currentUser.color}`;
+      document.getElementById('user-display-name').innerText = window.currentUser.name;
 
       const adminTab = document.getElementById('tab-admin');
       const balanceCard = document.getElementById('balance-card');
@@ -527,7 +612,7 @@
       const coopChildForm = document.getElementById('coop-child-form');
       const marketMomBadge = document.getElementById('market-mom-badge');
 
-      if (currentUser.role === 'mom') {
+      if (window.currentUser.role === 'mom') {
         adminTab.classList.remove('hidden');
         balanceCard.classList.add('hidden');
         editCoopBtn.classList.remove('hidden');
@@ -542,44 +627,54 @@
         coopChildForm.classList.remove('hidden');
         marketMomBadge.classList.add('hidden');
         document.getElementById('role-badge').innerText = "Дочка";
-        processChildEconomyRules(currentUser.key);
+        processChildEconomyRules(window.currentUser.key);
         updateChildEconomy();
         checkChildNotifications();
         switchTab('tasks');
       }
     }
 
-    // Логика депозита (+1% в день от 300) и налога (>600 монет)
+    window.refreshCurrentUI = function() {
+      if (!window.currentUser) return;
+      if (window.currentUser.role === 'mom') {
+        renderAdmin();
+      } else {
+        updateChildEconomy();
+        renderTasks();
+      }
+      renderMarket();
+      renderCoop();
+      renderHistory();
+    };
+
     function processChildEconomyRules(key) {
-      const u = state.users[key];
+      const u = window.state.users[key];
       const todayStr = new Date().toISOString().split('T')[0];
 
-      // 1. Депозит +1% в день от 300 монет (начисляется 1 раз в сутки)
       if (u.coins >= 300) {
         if (u.lastDepositDate !== todayStr) {
           const interest = u.coins * 0.01;
           u.coins += interest;
           u.lastDepositDate = todayStr;
           addHistoryRecord(key, "Депозит: +1% в день", interest, "income");
-          showPraise(`💰 Тебе начислен ежедневный процент: +${interest.toFixed(1)} 🪙!`);
+          showPraise(`💰 Начислен ежедневный депозит: +${interest.toFixed(1)} 🪙!`);
         }
       }
 
-      // 2. Налог на застой: если баланс превышает 600 монет, вычитается 10%
       if (u.coins > 600) {
         const penalty = u.coins * 0.10;
         u.coins -= penalty;
-        addHistoryRecord(key, "Налог на застой монет (>600 🪙)", penalty, "expense");
-        alert(`⚠️ Баланс превысил 600 монет! Автоматически списано 10% (${penalty.toFixed(1)} 🪙), чтобы монеты не застаивались.`);
+        addHistoryRecord(key, "Налог на застой (>600 🪙)", penalty, "expense");
+        alert(`⚠️ Баланс превысил 600 монет! Автоматически списано 10% (${penalty.toFixed(1)} 🪙).`);
       }
 
       saveState();
     }
 
     function checkChildNotifications() {
-      const userNotes = Object.keys(state.taskNotes || {})
-        .filter(k => k.endsWith(`_${currentUser.key}`))
-        .map(k => state.taskNotes[k]);
+      const userNotes = Object.keys(window.state.taskNotes || {})
+        .filter(k => k.endsWith(`_${window.currentUser.key}`))
+        .map(k => window.state.taskNotes[k]);
 
       const rejected = userNotes.filter(n => n.type === 'rejected');
       if (rejected.length > 0) {
@@ -588,7 +683,7 @@
     }
 
     function updateChildEconomy() {
-      const uData = state.users[currentUser.key];
+      const uData = window.state.users[window.currentUser.key];
       if (!uData.heldCoins) uData.heldCoins = 0;
 
       document.getElementById('user-coins-val').innerText = uData.coins.toFixed(1);
@@ -630,18 +725,17 @@
       if (tab === 'admin') renderAdmin();
     }
 
-    // 4. ЗАДАНИЯ
     function renderTasks() {
       const c = document.getElementById('tasks-container');
       c.innerHTML = "";
-      const isMom = currentUser.role === 'mom';
-      const list = isMom ? state.tasks : state.tasks.filter(t => t.target === 'all' || t.target === currentUser.key);
+      const isMom = window.currentUser.role === 'mom';
+      const list = isMom ? window.state.tasks : window.state.tasks.filter(t => t.target === 'all' || t.target === window.currentUser.key);
 
       list.forEach(t => {
-        const userKey = isMom ? 'all' : currentUser.key;
+        const userKey = isMom ? 'all' : window.currentUser.key;
         const noteKey = `${t.id}_${userKey}`;
-        const note = state.taskNotes ? state.taskNotes[noteKey] : null;
-        const isPending = state.pending.some(p => p.taskId === t.id && (isMom || p.userKey === currentUser.key));
+        const note = window.state.taskNotes ? window.state.taskNotes[noteKey] : null;
+        const isPending = window.state.pending.some(p => p.taskId === t.id && (isMom || p.userKey === window.currentUser.key));
 
         const card = document.createElement('div');
         card.className = "bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex flex-col gap-2";
@@ -719,14 +813,14 @@
 
       try {
         const compressedBase64 = await compressImage(file, 1080, 0.8);
-        const task = state.tasks.find(t => t.id === taskId);
-        delete state.taskNotes[`${taskId}_${currentUser.key}`];
+        const task = window.state.tasks.find(t => t.id === taskId);
+        delete window.state.taskNotes[`${taskId}_${window.currentUser.key}`];
 
-        state.pending.push({
+        window.state.pending.push({
           id: Date.now(),
           taskId,
-          userKey: currentUser.key,
-          userName: currentUser.name,
+          userKey: window.currentUser.key,
+          userName: window.currentUser.name,
           taskTitle: task.title,
           reward: task.reward,
           photo: compressedBase64,
@@ -741,25 +835,24 @@
     }
 
     function completeSimpleTask(taskId) {
-      const task = state.tasks.find(t => t.id === taskId);
-      delete state.taskNotes[`${taskId}_${currentUser.key}`];
-      rewardUser(currentUser.key, task.reward, task.title);
+      const task = window.state.tasks.find(t => t.id === taskId);
+      delete window.state.taskNotes[`${taskId}_${window.currentUser.key}`];
+      rewardUser(window.currentUser.key, task.reward, task.title);
       showPraise();
       renderTasks();
     }
 
     function rewardUser(uKey, amount, taskTitle) {
-      const u = state.users[uKey];
+      const u = window.state.users[uKey];
       let bonus = 0;
       if (u.streak >= 7) bonus = amount * 0.01;
       const total = amount + bonus;
       u.coins += total;
       addHistoryRecord(uKey, `Выполнено: ${taskTitle || 'Дело'}`, total, 'income');
       saveState();
-      if (currentUser && currentUser.key === uKey) updateChildEconomy();
+      if (window.currentUser && window.currentUser.key === uKey) updateChildEconomy();
     }
 
-    // 5. ПАНЕЛЬ МАМЫ И РЕДАКТИРОВАНИЕ
     function renderAdmin() {
       renderAdminBalances();
       renderPendingTasks();
@@ -768,12 +861,11 @@
       renderAdminHistory();
     }
 
-    // Редактирование балансов детей мамой С КОММЕНТАРИЕМ
     function renderAdminBalances() {
       const container = document.getElementById('admin-balances-grid');
       container.innerHTML = "";
       ['olya', 'vera', 'masha'].forEach(key => {
-        const u = state.users[key];
+        const u = window.state.users[key];
         const p = PROFILES[key];
         const col = document.createElement('div');
         col.className = "bg-slate-50 border border-slate-200 p-2.5 rounded-2xl flex flex-col items-center justify-between";
@@ -787,7 +879,7 @@
     }
 
     function editChildBalancePrompt(userKey) {
-      const u = state.users[userKey];
+      const u = window.state.users[userKey];
       const p = PROFILES[userKey];
       const val = prompt(`Текущий баланс ${p.name}: ${u.coins} 🪙\nВведите новый баланс:`, u.coins);
       if (val === null) return;
@@ -805,21 +897,20 @@
       addHistoryRecord(userKey, "Корректировка баланса мамой", Math.abs(diff), diff >= 0 ? 'income' : 'expense', comment);
       saveState();
       renderAdminBalances();
-      alert(`Баланс ${p.name} изменен на ${num} 🪙. Запись сохранена в истории.`);
+      alert(`Баланс ${p.name} изменен на ${num} 🪙.`);
     }
 
-    // Редактирование семейной копилки мамой
     function editCoopTarget() {
-      const newTitle = prompt("Название семейной цели:", state.coop.title || "Аквапарк");
+      const newTitle = prompt("Название семейной цели:", window.state.coop.title || "Аквапарк");
       if (!newTitle) return;
-      const newGoal = prompt("Необходимая сумма (цель):", state.coop.goal || 1000);
+      const newGoal = prompt("Необходимая сумма (цель):", window.state.coop.goal || 1000);
       if (!newGoal) return;
-      const newCollected = prompt("Уже собрано сейчас:", state.coop.collected || 0);
+      const newCollected = prompt("Уже собрано сейчас:", window.state.coop.collected || 0);
       if (newCollected === null) return;
 
-      state.coop.title = newTitle;
-      state.coop.goal = Math.max(1, parseFloat(newGoal) || 1000);
-      state.coop.collected = Math.max(0, parseFloat(newCollected) || 0);
+      window.state.coop.title = newTitle;
+      window.state.coop.goal = Math.max(1, parseFloat(newGoal) || 1000);
+      window.state.coop.collected = Math.max(0, parseFloat(newCollected) || 0);
       saveState();
       renderCoop();
       alert("Семейная цель обновлена!");
@@ -828,11 +919,11 @@
     function renderPendingTasks() {
       const c = document.getElementById('pending-tasks-container');
       c.innerHTML = "";
-      if (state.pending.length === 0) {
+      if (window.state.pending.length === 0) {
         c.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Новых отчетов пока нет 🎉</p>";
         return;
       }
-      state.pending.forEach(p => {
+      window.state.pending.forEach(p => {
         const card = document.createElement('div');
         card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2";
         card.innerHTML = `
@@ -852,17 +943,16 @@
     }
 
     function approveReport(id) {
-      const p = state.pending.find(x => x.id === id);
+      const p = window.state.pending.find(x => x.id === id);
       if (!p) return;
-      delete state.taskNotes[`${p.taskId}_${p.userKey}`];
+      delete window.state.taskNotes[`${p.taskId}_${p.userKey}`];
       rewardUser(p.userKey, p.reward, p.taskTitle);
-      state.pending = state.pending.filter(x => x.id !== id);
+      window.state.pending = window.state.pending.filter(x => x.id !== id);
       saveState();
       renderAdmin();
       alert(`Задание одобрено! ${p.userName} получила ${p.reward} монет.`);
     }
 
-    // Модалка: доработка или отклонение с комментарием
     function openActionModal(reportId, mode) {
       activeActionReportId = reportId;
       currentActionMode = mode;
@@ -904,7 +994,7 @@
     }
 
     function confirmRevisionAction() {
-      const p = state.pending.find(x => x.id === activeActionReportId);
+      const p = window.state.pending.find(x => x.id === activeActionReportId);
       if (!p) return closeRevisionModal();
 
       const custom = document.getElementById('custom-revision-text').value.trim();
@@ -913,21 +1003,19 @@
 
       const commentText = allComments.length > 0 ? allComments.join('. ') : (currentActionMode === 'reject' ? 'Задание не принято мамой.' : 'Нужно переделать аккуратнее.');
 
-      if (!state.taskNotes) state.taskNotes = {};
-      state.taskNotes[`${p.taskId}_${p.userKey}`] = {
+      if (!window.state.taskNotes) window.state.taskNotes = {};
+      window.state.taskNotes[`${p.taskId}_${p.userKey}`] = {
         type: currentActionMode === 'reject' ? 'rejected' : 'revision',
         comment: commentText
       };
 
-      // Убираем из проверки. БАЛАНС НЕ НАЧИСЛЯЕТСЯ! Задание возвращается дочке
-      state.pending = state.pending.filter(x => x.id !== p.id);
+      window.state.pending = window.state.pending.filter(x => x.id !== p.id);
       saveState();
       closeRevisionModal();
       renderAdmin();
-      alert(currentActionMode === 'reject' ? `Задание отклонено с комментарием.` : `Отправлено на доработку ${p.userName}. Монеты не начислены.`);
+      alert(currentActionMode === 'reject' ? `Задание отклонено.` : `Отправлено на доработку ${p.userName}. Монеты не начислены.`);
     }
 
-    // Создание дела (1-5 монет)
     function adminAddTask() {
       const icon = document.getElementById('admin-task-icon').value.trim() || "📌";
       const title = document.getElementById('admin-task-title').value.trim();
@@ -941,14 +1029,13 @@
         return alert("Стоимость задания должна быть строго от 1 до 5 монет!");
       }
 
-      state.tasks.push({ id: Date.now(), title, reward, target, icon, regular, needPhoto });
+      window.state.tasks.push({ id: Date.now(), title, reward, target, icon, regular, needPhoto });
       saveState();
       document.getElementById('admin-task-title').value = "";
       alert("Дело успешно добавлено!");
       renderAdmin();
     }
 
-    // Добавление новой награды (от 40 монет)
     function adminAddMarketItem() {
       const icon = document.getElementById('admin-item-icon').value.trim() || "🎁";
       const title = document.getElementById('admin-item-title').value.trim();
@@ -963,7 +1050,7 @@
 
       const stock = stockVal ? parseInt(stockVal) : null;
 
-      state.market.push({
+      window.state.market.push({
         id: Date.now(),
         title,
         price,
@@ -981,11 +1068,10 @@
       renderAdminMarketManage();
     }
 
-    // Управление и редактирование существующих наград
     function renderAdminMarketManage() {
       const box = document.getElementById('admin-market-manage');
       box.innerHTML = "";
-      state.market.forEach(item => {
+      window.state.market.forEach(item => {
         const isActive = item.active !== false;
         const row = document.createElement('div');
         row.className = "flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs";
@@ -1009,9 +1095,8 @@
       });
     }
 
-    // Модалка полного редактирования награды
     function openEditRewardModal(id) {
-      const item = state.market.find(x => x.id === id);
+      const item = window.state.market.find(x => x.id === id);
       if (!item) return;
       document.getElementById('edit-reward-id').value = item.id;
       document.getElementById('edit-reward-icon').value = item.icon || "🎁";
@@ -1037,7 +1122,7 @@
         return alert("Стоимость награды должна быть не менее 40 монет!");
       }
 
-      const item = state.market.find(x => x.id === id);
+      const item = window.state.market.find(x => x.id === id);
       if (item) {
         item.icon = icon;
         item.title = title;
@@ -1051,7 +1136,7 @@
     }
 
     function toggleRewardActive(id) {
-      const item = state.market.find(x => x.id === id);
+      const item = window.state.market.find(x => x.id === id);
       if (!item) return;
       item.active = !item.active;
       saveState();
@@ -1061,7 +1146,7 @@
     function renderPendingPurchases() {
       const purContainer = document.getElementById('pending-purchases-container');
       purContainer.innerHTML = "";
-      const pendingPurchases = state.purchases.filter(x => x.status === 'pending');
+      const pendingPurchases = window.state.purchases.filter(x => x.status === 'pending');
       
       if (pendingPurchases.length === 0) {
         purContainer.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Заявок на награды нет 🎁</p>";
@@ -1086,9 +1171,9 @@
     }
 
     function confirmFulfillPurchase(purchaseId) {
-      const pur = state.purchases.find(p => p.id === purchaseId);
+      const pur = window.state.purchases.find(p => p.id === purchaseId);
       if (!pur) return;
-      const u = state.users[pur.userKey];
+      const u = window.state.users[pur.userKey];
       u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
       pur.status = 'completed';
       saveState();
@@ -1097,13 +1182,13 @@
     }
 
     function rejectPurchase(purchaseId) {
-      const pur = state.purchases.find(p => p.id === purchaseId);
+      const pur = window.state.purchases.find(p => p.id === purchaseId);
       if (!pur) return;
-      const u = state.users[pur.userKey];
+      const u = window.state.users[pur.userKey];
       u.coins += pur.price;
       u.heldCoins = Math.max(0, (u.heldCoins || 0) - pur.price);
 
-      const m = state.market.find(x => x.id === pur.rewardId);
+      const m = window.state.market.find(x => x.id === pur.rewardId);
       if (m && m.stock !== null) m.stock += 1;
 
       pur.status = 'cancelled';
@@ -1113,15 +1198,14 @@
       alert(`Заявка отклонена. ${pur.price} монет возвращены на счет.`);
     }
 
-    // 6. МАРКЕТПЛЕЙС
     function renderMarket() {
-      const isMom = currentUser.role === 'mom';
-      const u = isMom ? null : state.users[currentUser.key];
+      const isMom = window.currentUser.role === 'mom';
+      const u = isMom ? null : window.state.users[window.currentUser.key];
       const ordersBox = document.getElementById('child-orders-container');
       ordersBox.innerHTML = "";
 
       if (!isMom) {
-        const myPending = state.purchases.filter(p => p.userKey === currentUser.key && p.status === 'pending');
+        const myPending = window.state.purchases.filter(p => p.userKey === window.currentUser.key && p.status === 'pending');
         if (myPending.length > 0) {
           ordersBox.classList.remove('hidden');
           ordersBox.innerHTML = "<div class='text-xs font-bold text-slate-500'>ОЖИДАЮТ ВРУЧЕНИЯ МАМОЙ:</div>";
@@ -1143,7 +1227,7 @@
       const c = document.getElementById('market-container');
       c.innerHTML = "";
 
-      const visibleMarket = isMom ? state.market : state.market.filter(m => m.active !== false);
+      const visibleMarket = isMom ? window.state.market : window.state.market.filter(m => m.active !== false);
 
       visibleMarket.forEach(m => {
         let isBlocked = false;
@@ -1157,8 +1241,8 @@
           if (!isBlocked && m.cooldown && m.cooldown !== 'none') {
             const limitDays = m.cooldown === 'weekly' ? 7 : 30;
             const cutoff = Date.now() - (limitDays * 24 * 60 * 60 * 1000);
-            const hasRecent = state.purchases.some(p => 
-              p.userKey === currentUser.key && 
+            const hasRecent = window.state.purchases.some(p => 
+              p.userKey === window.currentUser.key && 
               p.rewardId === m.id && 
               p.status !== 'cancelled' && 
               p.timestamp > cutoff
@@ -1201,8 +1285,8 @@
     }
 
     function requestRewardPurchase(rewardId) {
-      const m = state.market.find(x => x.id === rewardId);
-      const u = state.users[currentUser.key];
+      const m = window.state.market.find(x => x.id === rewardId);
+      const u = window.state.users[window.currentUser.key];
 
       if (u.coins < m.price) return alert("Недостаточно монет на балансе!");
 
@@ -1212,18 +1296,18 @@
 
         if (m.stock !== null) m.stock -= 1;
 
-        state.purchases.push({
+        window.state.purchases.push({
           id: Date.now(),
           rewardId: m.id,
           rewardTitle: m.title,
           price: m.price,
-          userKey: currentUser.key,
-          userName: currentUser.name,
+          userKey: window.currentUser.key,
+          userName: window.currentUser.name,
           timestamp: Date.now(),
           status: 'pending'
         });
 
-        addHistoryRecord(currentUser.key, `Запрос награды: ${m.title}`, m.price, 'expense');
+        addHistoryRecord(window.currentUser.key, `Запрос награды: ${m.title}`, m.price, 'expense');
         saveState();
         updateChildEconomy();
         renderMarket();
@@ -1231,31 +1315,30 @@
       }
     }
 
-    // 7. СЕМЕЙНАЯ КОПИЛКА
     function renderCoop() {
-      const goal = state.coop.goal || 1000;
-      document.getElementById('coop-title-display').innerText = `🌊 Семейная цель: ${state.coop.title || 'Аквапарк'}`;
-      document.getElementById('coop-collected').innerText = state.coop.collected;
+      const goal = window.state.coop.goal || 1000;
+      document.getElementById('coop-title-display').innerText = `🌊 Семейная цель: ${window.state.coop.title || 'Аквапарк'}`;
+      document.getElementById('coop-collected').innerText = window.state.coop.collected;
       document.getElementById('coop-goal').innerText = goal;
-      document.getElementById('coop-olya').innerText = state.coop.olya;
-      document.getElementById('coop-vera').innerText = state.coop.vera;
-      document.getElementById('coop-masha').innerText = state.coop.masha;
+      document.getElementById('coop-olya').innerText = window.state.coop.olya;
+      document.getElementById('coop-vera').innerText = window.state.coop.vera;
+      document.getElementById('coop-masha').innerText = window.state.coop.masha;
       
-      const pct = Math.min(100, Math.round((state.coop.collected / goal) * 100));
+      const pct = Math.min(100, Math.round((window.state.coop.collected / goal) * 100));
       document.getElementById('coop-progress-bar').style.width = pct + "%";
     }
 
     function contributeCoop() {
       const inp = document.getElementById('coop-input');
       const val = parseFloat(inp.value);
-      const u = state.users[currentUser.key];
+      const u = window.state.users[window.currentUser.key];
       if (!val || val <= 0) return alert("Введите сумму!");
       if (u.coins < val) return alert("У вас нет столько монет!");
 
       u.coins -= val;
-      state.coop.collected += val;
-      state.coop[currentUser.key] += val;
-      addHistoryRecord(currentUser.key, `Вклад в общую копилку (${state.coop.title})`, val, 'expense');
+      window.state.coop.collected += val;
+      window.state.coop[window.currentUser.key] += val;
+      addHistoryRecord(window.currentUser.key, `Вклад в общую копилку (${window.state.coop.title})`, val, 'expense');
 
       saveState();
       inp.value = "";
@@ -1264,12 +1347,11 @@
       showPraise("Спасибо за вклад в семейную поездку!");
     }
 
-    // 8. ИСТОРИЯ
     function renderHistory() {
       const box = document.getElementById('child-history-container');
       box.innerHTML = "";
-      const isMom = currentUser.role === 'mom';
-      const myHistory = isMom ? (state.history || []) : (state.history || []).filter(h => h.userKey === currentUser.key);
+      const isMom = window.currentUser.role === 'mom';
+      const myHistory = isMom ? (window.state.history || []) : (window.state.history || []).filter(h => h.userKey === window.currentUser.key);
 
       if (myHistory.length === 0) {
         box.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>История пока пуста ✨</p>";
@@ -1298,7 +1380,7 @@
       const filter = document.getElementById('admin-history-filter').value;
       box.innerHTML = "";
 
-      let list = state.history || [];
+      let list = window.state.history || [];
       if (filter !== 'all') list = list.filter(h => h.userKey === filter);
 
       if (list.length === 0) {
