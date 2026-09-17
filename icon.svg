@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgOliver" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4338CA"/>
+      <stop offset="50%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#8B5CF6"/>
+    </linearGradient>
+    <linearGradient id="rainbowTop" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#EC4899"/>
+      <stop offset="33%" stop-color="#F59E0B"/>
+      <stop offset="66%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#06B6D4"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="124" fill="url(#bgOliver)"/>
+
+  <circle cx="75" cy="115" r="16" fill="#FDE047" stroke="#CA8A04" stroke-width="2.5"/>
+  <text x="75" y="121" font-size="16" font-family="sans-serif" font-weight="900" fill="#CA8A04" text-anchor="middle">🪙</text>
+
+  <circle cx="435" cy="120" r="14" fill="#FDE047" stroke="#CA8A04" stroke-width="2.5"/>
+  <text x="435" y="126" font-size="14" font-family="sans-serif" font-weight="900" fill="#CA8A04" text-anchor="middle">🪙</text>
+
+  <!-- ОЛЯ (слева: школьная форма) -->
+  <path d="M85,370 L108,215 Q145,205 182,215 L205,370 Z" fill="#1E293B"/>
+  <polygon points="135,212 155,212 145,240" fill="#FFFFFF"/>
+  <polygon points="142,228 148,228 150,265 145,272 140,265" fill="#991B1B"/>
+  <path d="M120,214 L135,255 L130,285" stroke="#334155" stroke-width="3" fill="none"/>
+  <path d="M170,214 L155,255 L160,285" stroke="#334155" stroke-width="3" fill="none"/>
+  <rect x="135" y="172" width="20" height="32" rx="6" fill="#FED7AA"/>
+  <ellipse cx="145" cy="155" rx="33" ry="42" fill="#FED7AA"/>
+  <path d="M110,165 C108,100 182,100 180,165 C195,245 178,255 172,215 C165,135 125,135 118,215 C112,255 95,245 110,165 Z" fill="#EAB308"/>
+  <circle cx="134" cy="156" r="3.5" fill="#1F2937"/>
+  <circle cx="156" cy="156" r="3.5" fill="#1F2937"/>
+  <path d="M139,170 Q145,177 151,170" stroke="#1F2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="126" cy="164" rx="5" ry="3" fill="#FB7185" opacity="0.6"/>
+  <ellipse cx="164" cy="164" rx="5" ry="3" fill="#FB7185" opacity="0.6"/>
+
+  <!-- ВЕРА (в центре: косуха) -->
+  <path d="M205,370 L220,225 Q258,215 296,225 L311,370 Z" fill="#18181B"/>
+  <path d="M265,225 L245,340" stroke="#71717A" stroke-width="2.5" stroke-dasharray="3,2"/>
+  <path d="M235,225 L248,255 L225,260 Z" fill="#27272A"/>
+  <path d="M280,225 L268,255 L290,260 Z" fill="#27272A"/>
+  <circle cx="232" cy="256" r="1.5" fill="#E4E4E7"/>
+  <circle cx="284" cy="256" r="1.5" fill="#E4E4E7"/>
+  <rect x="247" y="185" width="22" height="28" rx="6" fill="#FED7AA"/>
+  <ellipse cx="258" cy="170" rx="34" ry="40" fill="#FED7AA"/>
+  <path d="M216,180 C210,105 306,105 304,180 C312,230 292,235 288,195 C275,155 240,155 228,195 C224,235 208,230 216,180 Z" fill="#EA580C"/>
+  <path d="M220,155 Q258,172 296,155" fill="none" stroke="#C2410C" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="245" cy="172" r="3.8" fill="#1F2937"/>
+  <circle cx="271" cy="172" r="3.8" fill="#1F2937"/>
+  <path d="M252,185 Q258,192 264,185" stroke="#1F2937" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <ellipse cx="236" cy="180" rx="5.5" ry="3.5" fill="#FB7185" opacity="0.6"/>
+  <ellipse cx="280" cy="180" rx="5.5" ry="3.5" fill="#FB7185" opacity="0.6"/>
+
+  <!-- МАША (справа: хвостик и радужный топ) -->
+  <path d="M345,370 L358,275 Q385,268 412,275 L425,370 Z" fill="url(#rainbowTop)"/>
+  <rect x="377" y="242" width="16" height="18" rx="5" fill="#FED7AA"/>
+  <circle cx="385" cy="226" r="31" fill="#FED7AA"/>
+  <path d="M354,228 C352,185 418,185 416,228 C410,205 360,205 354,228 Z" fill="#78350F"/>
+  <ellipse cx="385" cy="188" rx="10" ry="14" fill="#78350F"/>
+  <circle cx="385" cy="198" r="4" fill="#EC4899"/>
+  <circle cx="375" cy="227" r="3" fill="#1F2937"/>
+  <circle cx="395" cy="227" r="3" fill="#1F2937"/>
+  <path d="M381,238 Q385,243 389,238" stroke="#1F2937" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <ellipse cx="369" cy="233" rx="4" ry="2.5" fill="#FB7185" opacity="0.6"/>
+  <ellipse cx="401" cy="233" rx="4" ry="2.5" fill="#FB7185" opacity="0.6"/>
+
+  <!-- ПЛАШКА ОЛИВЕР -->
+  <rect x="126" y="405" width="260" height="58" rx="22" fill="#FFFFFF" opacity="0.97"/>
+  <text x="256" y="445" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="900" fill="#4338CA" text-anchor="middle" letter-spacing="3.5">ОЛИВЕР</text>
+</svg>
