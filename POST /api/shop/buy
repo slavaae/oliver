@@ -1,2 +1,0 @@
-const result = await requestPurchase(req.user.id, req.body.rewardId);
-res.json(result);

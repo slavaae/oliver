@@ -1,2 +1,0 @@
-await cancelPurchase(req.params.id, req.body.reason);
-res.json({ success: true });
