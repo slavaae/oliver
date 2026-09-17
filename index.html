@@ -20,14 +20,14 @@
     <span id="toast-text">Отличная работа!</span>
   </div>
 
-  <!-- ШТОРКА ЗАМЕЧАНИЙ ДЛЯ МАМЫ (НУЖНО ДОДЕЛАТЬ) -->
+  <!-- ШТОРКА ЗАМЕЧАНИЙ ДЛЯ МАМЫ (ДОДЕЛАТЬ / ОТКЛОНИТЬ) -->
   <div id="modal-revision" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-end justify-center hidden">
     <div class="bg-white w-full max-w-md rounded-t-3xl p-5 shadow-2xl space-y-4">
       <div class="flex justify-between items-center">
         <h3 id="revision-modal-title" class="text-sm font-black text-slate-800">Что нужно доделать?</h3>
         <button onclick="closeRevisionModal()" class="text-slate-400 text-lg leading-none p-1">✕</button>
       </div>
-      <p class="text-xs text-slate-500">Выберите готовые замечания или напишите свое:</p>
+      <p class="text-xs text-slate-500">Выберите готовые замечания или введите свое:</p>
       
       <div class="flex flex-wrap gap-1.5" id="presets-container">
         <button type="button" onclick="togglePreset(this, 'Не до конца убрано')" class="preset-btn text-[11px] px-3 py-1.5 rounded-full border border-slate-200 bg-slate-50 text-slate-700 font-semibold transition-all">Не до конца убрано</button>
@@ -45,11 +45,43 @@
     </div>
   </div>
 
-  <!-- 1. ЭКРАН ПРИВЕТСТВИЯ И ВВОДА PIN -->
+  <!-- МОДАЛЬНОЕ ОКНО РЕДАКТИРОВАНИЯ НАГРАДЫ МАМОЙ -->
+  <div id="modal-edit-reward" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white w-full max-w-sm rounded-3xl p-5 shadow-2xl space-y-3.5">
+      <div class="flex justify-between items-center">
+        <h3 class="text-sm font-black text-slate-800">Редактировать награду</h3>
+        <button onclick="closeEditRewardModal()" class="text-slate-400 text-lg leading-none p-1">✕</button>
+      </div>
+      <input type="hidden" id="edit-reward-id">
+      <div>
+        <label class="text-[10px] text-slate-400 font-bold block mb-1">ИКОНКА И НАЗВАНИЕ</label>
+        <div class="flex gap-2">
+          <input id="edit-reward-icon" type="text" class="w-14 text-center text-lg p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="edit-reward-title" type="text" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold">
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <div class="w-1/2">
+          <label class="text-[10px] text-slate-400 font-bold block mb-1">ЦЕНА (ОТ 40 🪙)</label>
+          <input id="edit-reward-price" type="number" min="40" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none font-black text-amber-600">
+        </div>
+        <div class="w-1/2">
+          <label class="text-[10px] text-slate-400 font-bold block mb-1">ОСТАТОК (ШТ)</label>
+          <input id="edit-reward-stock" type="number" placeholder="Безлимит" class="w-full text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+        </div>
+      </div>
+      <div class="flex gap-2 pt-2">
+        <button onclick="closeEditRewardModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">Отмена</button>
+        <button onclick="saveEditedReward()" class="flex-1 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-md">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. ЭКРАН ВХОДА И PIN -->
   <div id="screen-welcome" class="flex-1 flex flex-col justify-between p-5 max-w-sm mx-auto w-full min-h-screen">
     <div class="text-center pt-3">
       <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-[11px] font-bold mb-2">
-        <span>🌟</span> Приложение для дочек
+        <span>🌟</span> Семейный трекер
       </div>
       <h1 id="welcome-title" class="text-2xl font-black text-slate-800 transition-all">ОЛИВЕР</h1>
       <p id="welcome-subtitle" class="text-xs text-slate-400 mt-0.5 transition-all">Нажмите на свой профиль для входа</p>
@@ -131,12 +163,12 @@
           <p id="user-held-coins" class="text-[10px] text-amber-200 font-semibold hidden">В ожидании: <span>0</span> 🪙</p>
         </div>
         <div id="deposit-info" class="text-right text-[11px] text-white/90 leading-snug">
-          Депозит: от 300 монет
+          Депозит: от 300 монет (+1%/день)
         </div>
       </div>
     </div>
 
-    <!-- Вкладки навигации (Маркет открыт и для мамы!) -->
+    <!-- Вкладки навигации -->
     <div class="flex border-b border-slate-200 bg-white px-2 text-xs font-medium text-slate-500 justify-around sticky top-0 z-20 overflow-x-auto">
       <button onclick="switchTab('tasks')" id="tab-tasks" class="nav-tab active py-3 px-2">Задания</button>
       <button onclick="switchTab('market')" id="tab-market" class="nav-tab py-3 px-2">Награды</button>
@@ -206,9 +238,10 @@
     <!-- ВКЛАДКА: ПАНЕЛЬ МАМЫ (КОНТРОЛЬ) -->
     <div id="view-admin" class="p-4 space-y-4 flex-1 hidden">
       
-      <!-- 1. Редактирование счетов девочек -->
+      <!-- 1. Редактирование счетов девочек с комментарием -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Управление счетами дочек</h3>
+        <p class="text-[11px] text-slate-400">При изменении баланса укажите причину — она запишется в историю:</p>
         <div class="grid grid-cols-3 gap-2 text-center" id="admin-balances-grid"></div>
       </div>
 
@@ -224,7 +257,7 @@
         <div id="pending-tasks-container" class="space-y-2"></div>
       </div>
 
-      <!-- 4. Добавление товара в маркет мамой -->
+      <!-- 4. Добавление новой награды в маркет -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Добавить новый приз в маркет</h3>
         <div class="flex gap-2">
@@ -241,10 +274,10 @@
         <button onclick="adminAddMarketItem()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Добавить товар</button>
       </div>
 
-      <!-- 5. Управление витриной и изменение цен -->
+      <!-- 5. Управление и редактирование уже существующих наград -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Настройка товаров и цен</h3>
-        <div id="admin-market-manage" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Управление и правка наград</h3>
+        <div id="admin-market-manage" class="space-y-2 max-h-72 overflow-y-auto pr-1"></div>
       </div>
 
       <!-- 6. Общая история операций -->
@@ -261,13 +294,16 @@
         <div id="admin-history-container" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
       </div>
 
-      <!-- 7. Создание задачи (1-5 монет) -->
+      <!-- 7. Создание дела (1-5 монет) -->
       <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Назначить дело (1-5 монет)</h3>
-        <input id="admin-task-title" type="text" placeholder="Что нужно сделать?" class="w-full text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
         <div class="flex gap-2">
-          <input id="admin-task-reward" type="number" min="1" max="5" placeholder="Монеты (1-5)" value="3" class="w-28 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
-          <select id="admin-task-target" class="flex-1 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-task-icon" type="text" placeholder="Иконка" value="🧹" class="w-14 text-center text-sm p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <input id="admin-task-title" type="text" placeholder="Что нужно сделать?" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+        </div>
+        <div class="flex gap-2">
+          <input id="admin-task-reward" type="number" min="1" max="5" placeholder="Монеты (1-5)" value="3" class="w-28 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none font-bold">
+          <select id="admin-task-target" class="flex-1 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
             <option value="all">Всем дочкам</option>
             <option value="olya">Оле</option>
             <option value="vera">Вере</option>
@@ -278,13 +314,13 @@
           <label class="flex items-center gap-1.5"><input id="admin-task-regular" type="checkbox" checked> Регулярное</label>
           <label class="flex items-center gap-1.5"><input id="admin-task-photo" type="checkbox" checked> С фотоотчетом</label>
         </div>
-        <button onclick="adminAddTask()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Опубликовать</button>
+        <button onclick="adminAddTask()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Опубликовать дело</button>
       </div>
     </div>
   </div>
 
   <script>
-    const APP_VERSION = "3.0";
+    const APP_VERSION = "4.0";
 
     const PROFILES = {
       olya: {
@@ -334,21 +370,21 @@
       "Горжусь тобой!", "Супер-результат!", "Идеальный порядок!", "Мама улыбнется!"
     ];
 
-    // Стартовая база по новым правилам (задания 1-5, маркет от 40)
+    // Начальная база
     let defaultState = {
       version: APP_VERSION,
       users: {
-        olya: { coins: 50, heldCoins: 0, streak: 7 },
-        vera: { coins: 50, heldCoins: 0, streak: 4 },
-        masha: { coins: 50, heldCoins: 0, streak: 2 }
+        olya: { coins: 50, heldCoins: 0, streak: 7, lastDepositDate: null },
+        vera: { coins: 50, heldCoins: 0, streak: 4, lastDepositDate: null },
+        masha: { coins: 50, heldCoins: 0, streak: 2, lastDepositDate: null }
       },
       coop: { title: "Аквапарк", goal: 1000, collected: 450, olya: 200, vera: 150, masha: 100 },
       tasks: [
-        { id: 1, title: "Заправить постель сразу после сна", reward: 2, target: "all", regular: true, needPhoto: true },
-        { id: 2, title: "Сложить одежду в шкаф аккуратно", reward: 3, target: "all", regular: true, needPhoto: true },
-        { id: 3, title: "Почитать книгу 25 минут", reward: 4, target: "all", regular: true, needPhoto: false },
-        { id: 4, title: "Утренняя зарядка 10 минут", reward: 2, target: "all", regular: true, needPhoto: false },
-        { id: 5, title: "Помыть посуду за собой", reward: 3, target: "all", regular: true, needPhoto: true }
+        { id: 1, title: "Заправить постель сразу после сна", reward: 2, target: "all", icon: "🛏️", regular: true, needPhoto: true },
+        { id: 2, title: "Сложить одежду в шкаф аккуратно", reward: 3, target: "all", icon: "👔", regular: true, needPhoto: true },
+        { id: 3, title: "Почитать книгу 25 минут", reward: 4, target: "all", icon: "📖", regular: true, needPhoto: false },
+        { id: 4, title: "Утренняя зарядка 10 минут", reward: 2, target: "all", icon: "🏃‍♀️", regular: true, needPhoto: false },
+        { id: 5, title: "Помыть посуду за собой", reward: 3, target: "all", icon: "🍽️", regular: true, needPhoto: true }
       ],
       market: [
         { id: 1, title: "Задержаться на прогулке на 30 мин", price: 40, icon: "⏰", stock: null, cooldown: "weekly", active: true },
@@ -359,7 +395,7 @@
         { id: 6, title: "Сертификат Ozon/WB на 500р", price: 150, icon: "🎁", stock: 2, cooldown: "monthly", active: false }
       ],
       pending: [],
-      taskNotes: {}, // { [taskId_userKey]: { type: 'revision'|'rejected', comment: '...' } }
+      taskNotes: {},
       purchases: [],
       history: [
         { id: 1, userKey: "olya", title: "Стартовый капитал", amount: 50, type: "income", date: "Сегодня" },
@@ -379,23 +415,26 @@
     let currentUser = null;
 
     let activeActionReportId = null;
-    let currentActionMode = 'revision'; // 'revision' или 'reject'
+    let currentActionMode = 'revision';
     let selectedPresets = [];
 
     function saveState() {
       localStorage.setItem('oliver_app_state', JSON.stringify(state));
     }
 
-    function addHistoryRecord(userKey, title, amount, type) {
+    function addHistoryRecord(userKey, title, amount, type, customComment = "") {
       if (!state.history) state.history = [];
       const now = new Date();
       const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' }) + ', ' + 
                       now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      
+      const fullTitle = customComment ? `${title} («${customComment}»)` : title;
+
       state.history.unshift({
         id: Date.now() + Math.random(),
         userKey,
-        title,
-        amount,
+        title: fullTitle,
+        amount: parseFloat(amount.toFixed(1)),
         type,
         date: dateStr
       });
@@ -476,7 +515,7 @@
       document.getElementById('pin-pad-container').classList.add('opacity-30', 'pointer-events-none');
     }
 
-    // 3. ИНИЦИАЛИЗАЦИЯ ИНТЕРФЕЙСА
+    // 3. ИНИЦИАЛИЗАЦИЯ И ЭКОНОМИКА (ДЕПОЗИТ И НАЛОГ)
     function initUserApp() {
       const header = document.getElementById('user-header');
       header.className = `p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300 ${currentUser.color}`;
@@ -503,10 +542,38 @@
         coopChildForm.classList.remove('hidden');
         marketMomBadge.classList.add('hidden');
         document.getElementById('role-badge').innerText = "Дочка";
+        processChildEconomyRules(currentUser.key);
         updateChildEconomy();
         checkChildNotifications();
         switchTab('tasks');
       }
+    }
+
+    // Логика депозита (+1% в день от 300) и налога (>600 монет)
+    function processChildEconomyRules(key) {
+      const u = state.users[key];
+      const todayStr = new Date().toISOString().split('T')[0];
+
+      // 1. Депозит +1% в день от 300 монет (начисляется 1 раз в сутки)
+      if (u.coins >= 300) {
+        if (u.lastDepositDate !== todayStr) {
+          const interest = u.coins * 0.01;
+          u.coins += interest;
+          u.lastDepositDate = todayStr;
+          addHistoryRecord(key, "Депозит: +1% в день", interest, "income");
+          showPraise(`💰 Тебе начислен ежедневный процент: +${interest.toFixed(1)} 🪙!`);
+        }
+      }
+
+      // 2. Налог на застой: если баланс превышает 600 монет, вычитается 10%
+      if (u.coins > 600) {
+        const penalty = u.coins * 0.10;
+        u.coins -= penalty;
+        addHistoryRecord(key, "Налог на застой монет (>600 🪙)", penalty, "expense");
+        alert(`⚠️ Баланс превысил 600 монет! Автоматически списано 10% (${penalty.toFixed(1)} 🪙), чтобы монеты не застаивались.`);
+      }
+
+      saveState();
     }
 
     function checkChildNotifications() {
@@ -537,10 +604,12 @@
       document.getElementById('streak-badge').innerText = `Стрик: ${uData.streak} дн.`;
 
       const depInfo = document.getElementById('deposit-info');
-      if (uData.coins >= 300) {
+      if (uData.coins > 550) {
+        depInfo.innerHTML = "<span class='text-amber-200 font-bold'>⚠️ Скоро налог 10% (>600)!</span>";
+      } else if (uData.coins >= 300) {
         depInfo.innerHTML = "<span class='text-emerald-200 font-semibold'>✅ Депозит +1% в день</span>";
       } else {
-        depInfo.innerText = "Депозит от 300 монет";
+        depInfo.innerText = "Депозит от 300 монет (+1%/день)";
       }
     }
 
@@ -595,12 +664,15 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <div class="pr-2">
-              <p class="text-xs font-bold text-slate-800">${t.title}</p>
-              <div class="flex items-center gap-1.5 mt-1">
-                <span class="text-[11px] font-extrabold text-amber-500">+${t.reward} 🪙</span>
-                ${t.needPhoto ? '<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Фото</span>' : ''}
-                ${t.regular ? '<span class="text-[9px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded">Каждый день</span>' : ''}
+            <div class="flex items-center gap-2.5 pr-2">
+              <span class="text-2xl">${t.icon || '📌'}</span>
+              <div>
+                <p class="text-xs font-bold text-slate-800">${t.title}</p>
+                <div class="flex items-center gap-1.5 mt-0.5">
+                  <span class="text-[11px] font-extrabold text-amber-500">+${t.reward} 🪙</span>
+                  ${t.needPhoto ? '<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Фото</span>' : ''}
+                  ${t.regular ? '<span class="text-[9px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded">Каждый день</span>' : ''}
+                </div>
               </div>
             </div>
             <div>${actionArea}</div>
@@ -609,7 +681,7 @@
             <div class="${note.type === 'rejected' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800'} border rounded-xl p-2.5 text-[11px] flex items-start gap-1.5">
               <span>${note.type === 'rejected' ? '❌' : '⚠️'}</span>
               <div>
-                <b>${note.type === 'rejected' ? 'Задание отклонено мамой:' : 'Нужно доделать:'}</b> ${note.comment}
+                <b>${note.type === 'rejected' ? 'Отклонено мамой:' : 'Нужно доделать:'}</b> ${note.comment}
               </div>
             </div>
           ` : ''}
@@ -696,7 +768,7 @@
       renderAdminHistory();
     }
 
-    // Редактирование балансов детей мамой
+    // Редактирование балансов детей мамой С КОММЕНТАРИЕМ
     function renderAdminBalances() {
       const container = document.getElementById('admin-balances-grid');
       container.innerHTML = "";
@@ -708,29 +780,32 @@
         col.innerHTML = `
           <span class="font-bold text-xs text-slate-700">${p.name}</span>
           <span class="text-sm font-black text-amber-600 my-1">${u.coins.toFixed(1)} 🪙</span>
-          <button onclick="editChildBalance('${key}')" class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold">Изменить</button>
+          <button onclick="editChildBalancePrompt('${key}')" class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-1 rounded-lg font-bold">Изменить</button>
         `;
         container.appendChild(col);
       });
     }
 
-    function editChildBalance(userKey) {
+    function editChildBalancePrompt(userKey) {
       const u = state.users[userKey];
       const p = PROFILES[userKey];
-      const val = prompt(`Введите новый баланс для ${p.name}:`, u.coins);
-      if (val !== null) {
-        const num = parseFloat(val);
-        if (!isNaN(num) && num >= 0) {
-          const diff = num - u.coins;
-          u.coins = num;
-          addHistoryRecord(userKey, "Корректировка баланса мамой", Math.abs(diff), diff >= 0 ? 'income' : 'expense');
-          saveState();
-          renderAdminBalances();
-          alert(`Баланс ${p.name} обновлен: ${num} 🪙`);
-        } else {
-          alert("Введите корректное неотрицательное число!");
-        }
+      const val = prompt(`Текущий баланс ${p.name}: ${u.coins} 🪙\nВведите новый баланс:`, u.coins);
+      if (val === null) return;
+
+      const num = parseFloat(val);
+      if (isNaN(num) || num < 0) {
+        return alert("Введите корректное неотрицательное число!");
       }
+
+      const comment = prompt(`Укажите причину изменения баланса для ${p.name}:`, "Поощрение мамы");
+      if (comment === null) return;
+
+      const diff = num - u.coins;
+      u.coins = num;
+      addHistoryRecord(userKey, "Корректировка баланса мамой", Math.abs(diff), diff >= 0 ? 'income' : 'expense', comment);
+      saveState();
+      renderAdminBalances();
+      alert(`Баланс ${p.name} изменен на ${num} 🪙. Запись сохранена в истории.`);
     }
 
     // Редактирование семейной копилки мамой
@@ -747,7 +822,7 @@
       state.coop.collected = Math.max(0, parseFloat(newCollected) || 0);
       saveState();
       renderCoop();
-      alert("Семейная цель успешно обновлена!");
+      alert("Семейная цель обновлена!");
     }
 
     function renderPendingTasks() {
@@ -844,15 +919,17 @@
         comment: commentText
       };
 
+      // Убираем из проверки. БАЛАНС НЕ НАЧИСЛЯЕТСЯ! Задание возвращается дочке
       state.pending = state.pending.filter(x => x.id !== p.id);
       saveState();
       closeRevisionModal();
       renderAdmin();
-      alert(currentActionMode === 'reject' ? `Задание отклонено. ${p.userName} получит комментарий.` : `Отправлено на доработку ${p.userName}.`);
+      alert(currentActionMode === 'reject' ? `Задание отклонено с комментарием.` : `Отправлено на доработку ${p.userName}. Монеты не начислены.`);
     }
 
-    // Создание задания (1-5 монет)
+    // Создание дела (1-5 монет)
     function adminAddTask() {
+      const icon = document.getElementById('admin-task-icon').value.trim() || "📌";
       const title = document.getElementById('admin-task-title').value.trim();
       const reward = parseInt(document.getElementById('admin-task-reward').value);
       const target = document.getElementById('admin-task-target').value;
@@ -861,17 +938,17 @@
 
       if (!title) return alert("Введите название дела!");
       if (isNaN(reward) || reward < 1 || reward > 5) {
-        return alert("Стоимость задания должна быть от 1 до 5 монет!");
+        return alert("Стоимость задания должна быть строго от 1 до 5 монет!");
       }
 
-      state.tasks.push({ id: Date.now(), title, reward, target, regular, needPhoto });
+      state.tasks.push({ id: Date.now(), title, reward, target, icon, regular, needPhoto });
       saveState();
       document.getElementById('admin-task-title').value = "";
       alert("Дело успешно добавлено!");
       renderAdmin();
     }
 
-    // Добавление товара мамой (от 40 монет)
+    // Добавление новой награды (от 40 монет)
     function adminAddMarketItem() {
       const icon = document.getElementById('admin-item-icon').value.trim() || "🎁";
       const title = document.getElementById('admin-item-title').value.trim();
@@ -881,7 +958,7 @@
 
       if (!title) return alert("Введите название награды!");
       if (isNaN(price) || price < 40) {
-        return alert("Минимальная стоимость покупки на маркетплейсе — 40 монет!");
+        return alert("Минимальная стоимость награды — 40 монет!");
       }
 
       const stock = stockVal ? parseInt(stockVal) : null;
@@ -900,11 +977,11 @@
       document.getElementById('admin-item-title').value = "";
       document.getElementById('admin-item-price').value = "";
       document.getElementById('admin-item-stock').value = "";
-      alert("Товар добавлен в маркетплейс!");
+      alert("Награда добавлена в маркетплейс!");
       renderAdminMarketManage();
     }
 
-    // Редактирование цены и скрытие товаров мамой
+    // Управление и редактирование существующих наград
     function renderAdminMarketManage() {
       const box = document.getElementById('admin-market-manage');
       box.innerHTML = "";
@@ -922,7 +999,7 @@
             </div>
           </div>
           <div class="flex items-center gap-1.5">
-            <button onclick="editMarketItemPrice(${item.id})" class="px-2 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-700">✏️ Цена</button>
+            <button onclick="openEditRewardModal(${item.id})" class="px-2 py-1 bg-white border border-slate-200 rounded-lg font-bold text-slate-700 shadow-sm">✏️ Изменить</button>
             <button onclick="toggleRewardActive(${item.id})" class="px-2 py-1 rounded-lg font-bold ${isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'}">
               ${isActive ? '👁️ Вкл' : '🙈 Скрыт'}
             </button>
@@ -932,20 +1009,44 @@
       });
     }
 
-    function editMarketItemPrice(id) {
+    // Модалка полного редактирования награды
+    function openEditRewardModal(id) {
       const item = state.market.find(x => x.id === id);
       if (!item) return;
-      const val = prompt(`Новая цена для "${item.title}" (не менее 40 монет):`, item.price);
-      if (val !== null) {
-        const p = parseFloat(val);
-        if (!isNaN(p) && p >= 40) {
-          item.price = p;
-          saveState();
-          renderAdminMarketManage();
-          alert(`Цена изменена на ${p} 🪙`);
-        } else {
-          alert("Цена товара не может быть меньше 40 монет!");
-        }
+      document.getElementById('edit-reward-id').value = item.id;
+      document.getElementById('edit-reward-icon').value = item.icon || "🎁";
+      document.getElementById('edit-reward-title').value = item.title;
+      document.getElementById('edit-reward-price').value = item.price;
+      document.getElementById('edit-reward-stock').value = item.stock !== null ? item.stock : "";
+      document.getElementById('modal-edit-reward').classList.remove('hidden');
+    }
+
+    function closeEditRewardModal() {
+      document.getElementById('modal-edit-reward').classList.add('hidden');
+    }
+
+    function saveEditedReward() {
+      const id = parseInt(document.getElementById('edit-reward-id').value);
+      const icon = document.getElementById('edit-reward-icon').value.trim() || "🎁";
+      const title = document.getElementById('edit-reward-title').value.trim();
+      const price = parseFloat(document.getElementById('edit-reward-price').value);
+      const stockVal = document.getElementById('edit-reward-stock').value.trim();
+
+      if (!title) return alert("Введите название приза!");
+      if (isNaN(price) || price < 40) {
+        return alert("Стоимость награды должна быть не менее 40 монет!");
+      }
+
+      const item = state.market.find(x => x.id === id);
+      if (item) {
+        item.icon = icon;
+        item.title = title;
+        item.price = price;
+        item.stock = stockVal ? parseInt(stockVal) : null;
+        saveState();
+        closeEditRewardModal();
+        renderAdminMarketManage();
+        alert("Награда успешно обновлена!");
       }
     }
 
@@ -1006,7 +1107,7 @@
       if (m && m.stock !== null) m.stock += 1;
 
       pur.status = 'cancelled';
-      addHistoryRecord(pur.userKey, `Возврат за отмену: ${pur.rewardTitle}`, pur.price, 'income');
+      addHistoryRecord(pur.userKey, `Возврат за отмену награды: ${pur.rewardTitle}`, pur.price, 'income');
       saveState();
       renderAdmin();
       alert(`Заявка отклонена. ${pur.price} монет возвращены на счет.`);
@@ -1042,7 +1143,6 @@
       const c = document.getElementById('market-container');
       c.innerHTML = "";
 
-      // Мама видит все товары (включая черновики), дети — только активные
       const visibleMarket = isMom ? state.market : state.market.filter(m => m.active !== false);
 
       visibleMarket.forEach(m => {
@@ -1078,17 +1178,17 @@
         card.innerHTML = `
           <div>
             <div class="flex justify-between items-start mb-1">
-              <span class="text-2xl">${m.icon}</span>
+              <span class="text-3xl">${m.icon || '🎁'}</span>
               ${m.stock !== null ? `<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold">Осталось: ${m.stock}</span>` : ''}
             </div>
-            <p class="text-xs font-bold text-slate-800 leading-tight">${m.title}</p>
+            <p class="text-xs font-bold text-slate-800 leading-tight mt-1">${m.title}</p>
             ${isMom && !m.active ? `<span class="text-[9px] text-amber-600 font-bold block mt-1">Черновик (скрыт)</span>` : ''}
             ${isBlocked ? `<span class="text-[10px] text-rose-500 font-bold block mt-1">🔒 ${blockReason}</span>` : ''}
           </div>
           <div class="mt-3 flex items-center justify-between">
             <span class="text-xs font-black text-amber-500">${m.price} 🪙</span>
             ${isMom ? `
-              <button onclick="switchTab('admin')" class="px-2 py-1 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-600">Настроить</button>
+              <button onclick="openEditRewardModal(${m.id})" class="px-2 py-1 rounded-xl text-[10px] font-bold bg-slate-100 text-slate-600">Править</button>
             ` : `
               <button onclick="requestRewardPurchase(${m.id})" class="px-2.5 py-1 rounded-xl text-[11px] font-bold ${!disabled ? 'bg-indigo-600 text-white active:scale-95' : 'bg-slate-100 text-slate-400'}" ${disabled ? 'disabled' : ''}>
                 Купить
@@ -1123,7 +1223,7 @@
           status: 'pending'
         });
 
-        addHistoryRecord(currentUser.key, `Запрос приза: ${m.title}`, m.price, 'expense');
+        addHistoryRecord(currentUser.key, `Запрос награды: ${m.title}`, m.price, 'expense');
         saveState();
         updateChildEconomy();
         renderMarket();
