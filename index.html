@@ -1,1 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Оливер — Семейный трекер</title>
+  <meta name="theme-color" content="#4338CA">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { -webkit-tap-highlight-color: transparent; }
+    .pin-dot { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+    .nav-tab.active { color: #4338CA; border-bottom: 2px solid #4338CA; font-weight: 700; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col font-sans select-none">
 
+  <!-- ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ-МОТИВАЦИЯ -->
+  <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none z-50 flex items-center gap-2.5 max-w-[90vw] text-center border border-white/10">
+    <span class="text-base">✨</span>
+    <span id="toast-text">Отличная работа!</span>
+  </div>
+
+  <!-- 1. ЭКРАН ПРИВЕТСТВИЯ И ВВОДА PIN -->
+  <div id="screen-welcome" class="flex-1 flex flex-col justify-between p-5 max-w-sm mx-auto w-full min-h-screen">
+    <div class="text-center pt-3">
+      <div class="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-[11px] font-bold mb-2">
+        <span>🌟</span> Приложение для дочек
+      </div>
+      <h1 id="welcome-title" class="text-2xl font-black text-slate-800 transition-all">ОЛИВЕР</h1>
+      <p id="welcome-subtitle" class="text-xs text-slate-400 mt-0.5 transition-all">Нажмите на свой профиль для входа</p>
+    </div>
+
+    <!-- Сетка профилей -->
+    <div class="grid grid-cols-4 gap-2.5 w-full my-3">
+      <!-- ОЛЯ -->
+      <button id="btn-olya" onclick="selectUser('olya')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
+        <div class="w-13 h-13 w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500 shadow-sm mb-1 bg-purple-50 flex items-center justify-center text-sm font-bold text-purple-700">
+          <img src="olya.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=olya'" alt="Оля" class="w-full h-full object-cover">
+        </div>
+        <span class="text-xs font-bold text-slate-700">Оля</span>
+      </button>
+
+      <!-- ВЕРА -->
+      <button id="btn-vera" onclick="selectUser('vera')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
+        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-amber-500 shadow-sm mb-1 bg-amber-50 flex items-center justify-center text-sm font-bold text-amber-700">
+          <img src="vera.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=vera'" alt="Вера" class="w-full h-full object-cover">
+        </div>
+        <span class="text-xs font-bold text-slate-700">Вера</span>
+      </button>
+
+      <!-- МАША -->
+      <button id="btn-masha" onclick="selectUser('masha')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
+        <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-emerald-500 shadow-sm mb-1 bg-emerald-50 flex items-center justify-center text-sm font-bold text-emerald-700">
+          <img src="masha.jpg" onerror="this.src='https://api.dicebear.com/7.x/bottts/svg?seed=masha'" alt="Маша" class="w-full h-full object-cover">
+        </div>
+        <span class="text-xs font-bold text-slate-700">Маша</span>
+      </button>
+
+      <!-- МАМА -->
+      <button id="btn-mom" onclick="selectUser('mom')" class="avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white transition-all">
+        <div class="w-12 h-12 rounded-full border-2 border-indigo-600 shadow-sm mb-1 bg-indigo-50 flex items-center justify-center text-lg">
+          👑
+        </div>
+        <span class="text-xs font-bold text-slate-700">Мама</span>
+      </button>
+    </div>
+
+    <!-- Цифровая клавиатура PIN -->
+    <div id="pin-pad-container" class="w-full max-w-[270px] mx-auto opacity-30 pointer-events-none transition-opacity duration-300 pb-4">
+      <div class="flex justify-center gap-3 mb-4">
+        <div class="pin-dot w-3.5 h-3.5 rounded-full border-2 border-slate-300"></div>
+        <div class="pin-dot w-3.5 h-3.5 rounded-full border-2 border-slate-300"></div>
+        <div class="pin-dot w-3.5 h-3.5 rounded-full border-2 border-slate-300"></div>
+        <div class="pin-dot w-3.5 h-3.5 rounded-full border-2 border-slate-300"></div>
+      </div>
+      <div class="grid grid-cols-3 gap-2 text-center">
+        <button onclick="pressPin('1')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">1</button>
+        <button onclick="pressPin('2')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">2</button>
+        <button onclick="pressPin('3')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">3</button>
+        <button onclick="pressPin('4')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">4</button>
+        <button onclick="pressPin('5')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">5</button>
+        <button onclick="pressPin('6')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">6</button>
+        <button onclick="pressPin('7')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">7</button>
+        <button onclick="pressPin('8')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">8</button>
+        <button onclick="pressPin('9')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">9</button>
+        <button onclick="clearPin()" class="h-12 rounded-2xl text-[10px] font-bold text-slate-400 active:bg-slate-100">СБРОС</button>
+        <button onclick="pressPin('0')" class="h-12 bg-white rounded-2xl text-lg font-bold shadow-sm active:bg-slate-100">0</button>
+        <button onclick="backspacePin()" class="h-12 rounded-2xl text-base font-bold text-slate-500 active:bg-slate-100">⌫</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. ОСНОВНОЙ РАБОЧИЙ ЭКРАН -->
+  <div id="screen-app" class="hidden flex-1 flex flex-col max-w-md mx-auto w-full pb-6">
+    <!-- Шапка профиля -->
+    <div id="user-header" class="p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300">
+      <div class="flex justify-between items-center mb-3">
+        <div>
+          <span id="role-badge" class="text-[10px] uppercase font-black tracking-widest px-2 py-0.5 rounded-full bg-white/20">Профиль</span>
+          <h2 id="user-display-name" class="text-xl font-black mt-0.5">Оля</h2>
+        </div>
+        <button onclick="logout()" class="text-xs bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-xl font-semibold">Сменить</button>
+      </div>
+
+      <!-- Карточка баланса и депозита -->
+      <div id="balance-card" class="bg-white/10 backdrop-blur-md rounded-2xl p-3.5 flex justify-between items-center border border-white/10">
+        <div>
+          <p class="text-[11px] text-white/80">Твой баланс</p>
+          <p class="text-2xl font-black"><span id="user-coins-val">0</span> 🪙</p>
+        </div>
+        <div id="deposit-info" class="text-right text-[11px] text-white/90 leading-snug">
+          Депозит: от 300 монет
+        </div>
+      </div>
+    </div>
+
+    <!-- Вкладки навигации -->
+    <div class="flex border-b border-slate-200 bg-white px-4 text-xs font-medium text-slate-500 justify-around sticky top-0 z-20">
+      <button onclick="switchTab('tasks')" id="tab-tasks" class="nav-tab active py-3">Задания</button>
+      <button onclick="switchTab('market')" id="tab-market" class="nav-tab py-3">Награды</button>
+      <button onclick="switchTab('coop')" id="tab-coop" class="nav-tab py-3">Общая цель</button>
+      <button onclick="switchTab('admin')" id="tab-admin" class="nav-tab py-3 hidden">Контроль</button>
+    </div>
+
+    <!-- ВКЛАДКА: ЗАДАНИЯ -->
+    <div id="view-tasks" class="p-4 space-y-3 flex-1">
+      <div class="flex items-center justify-between text-xs text-slate-500 font-bold px-1">
+        <span>СПИСОК ДЕЛ</span>
+        <span id="streak-badge" class="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">Стрик: 0 дн.</span>
+      </div>
+      <div id="tasks-container" class="space-y-2.5"></div>
+    </div>
+
+    <!-- ВКЛАДКА: МАРКЕТПЛЕЙС НАГРАД -->
+    <div id="view-market" class="p-4 space-y-3 flex-1 hidden">
+      <div class="text-xs text-slate-500 font-bold px-1">ВИТРИНА НАГРАД (ОБМЕН МОНЕТ)</div>
+      <div id="market-container" class="grid grid-cols-2 gap-2.5"></div>
+    </div>
+
+    <!-- ВКЛАДКА: СЕМЕЙНАЯ КОПИЛКА -->
+    <div id="view-coop" class="p-4 space-y-3 flex-1 hidden">
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h3 class="font-bold text-sm text-slate-800">🌊 Семейная цель: Аквапарк</h3>
+        <p class="text-xs text-slate-500">Скидываемся всей семьей на общий большой праздник!</p>
+        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+          <div id="coop-progress-bar" class="bg-indigo-600 h-full rounded-full transition-all" style="width: 45%;"></div>
+        </div>
+        <div class="flex justify-between text-xs font-semibold text-slate-600">
+          <span>Собрано: <b id="coop-collected">450</b> 🪙</span>
+          <span>Цель: 1000 🪙</span>
+        </div>
+        <div class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl space-y-1">
+          <div>Оля внесла: <b id="coop-olya">200</b> 🪙</div>
+          <div>Вера внесла: <b id="coop-vera">150</b> 🪙</div>
+          <div>Маша внесла: <b id="coop-masha">100</b> 🪙</div>
+        </div>
+        <div class="flex gap-2 pt-1">
+          <input id="coop-input" type="number" placeholder="Монет" class="w-24 text-xs p-2.5 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <button onclick="contributeCoop()" class="flex-1 bg-indigo-600 text-white rounded-xl text-xs font-bold shadow-sm">Внести в копилку</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ВКЛАДКА: ПАНЕЛЬ МАМЫ (КОНТРОЛЬ) -->
+    <div id="view-admin" class="p-4 space-y-4 flex-1 hidden">
+      <!-- Проверка фотоотчетов -->
+      <div>
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Ожидают проверки мамой</h3>
+        <div id="pending-tasks-container" class="space-y-2"></div>
+      </div>
+
+      <!-- Создание задачи -->
+      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-slate-700 uppercase tracking-wider">Назначить новое дело</h3>
+        <input id="admin-task-title" type="text" placeholder="Что нужно сделать?" class="w-full text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+        <div class="flex gap-2">
+          <input id="admin-task-reward" type="number" placeholder="Монеты" value="15" class="w-24 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+          <select id="admin-task-target" class="flex-1 text-xs p-3 bg-slate-50 rounded-xl border border-slate-200 outline-none">
+            <option value="all">Всем дочкам</option>
+            <option value="olya">Оле</option>
+            <option value="vera">Вере</option>
+            <option value="masha">Маше</option>
+          </select>
+        </div>
+        <div class="flex justify-between items-center text-xs px-1 text-slate-600">
+          <label class="flex items-center gap-1.5"><input id="admin-task-regular" type="checkbox" checked> Регулярное</label>
+          <label class="flex items-center gap-1.5"><input id="admin-task-photo" type="checkbox" checked> С фотоотчетом</label>
+        </div>
+        <button onclick="adminAddTask()" class="w-full py-2.5 bg-indigo-600 text-white font-bold rounded-xl text-xs shadow-md">Опубликовать</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 1. БАЗА ДАННЫХ И ПОЛЬЗОВАТЕЛИ
+    const PROFILES = {
+      olya: {
+        name: "Оля",
+        pin: "2703",
+        role: "child",
+        color: "bg-purple-600",
+        ring: "ring-4 ring-purple-400 border-purple-500",
+        dot: "bg-purple-600 border-purple-600",
+        greeting: "Привет, Оля! ✨",
+        desc: "Школьная форма готова к пятеркам!"
+      },
+      vera: {
+        name: "Вера",
+        pin: "0852",
+        role: "child",
+        color: "bg-amber-500",
+        ring: "ring-4 ring-amber-400 border-amber-500",
+        dot: "bg-amber-500 border-amber-500",
+        greeting: "Привет, Вера! 🎸",
+        desc: "Кожаная куртка надета, день ждет!"
+      },
+      masha: {
+        name: "Маша",
+        pin: "2212",
+        role: "child",
+        color: "bg-emerald-600",
+        ring: "ring-4 ring-emerald-400 border-emerald-500",
+        dot: "bg-emerald-600 border-emerald-600",
+        greeting: "Привет, Машуля! 🌈",
+        desc: "Солнечное утро и радужный топ!"
+      },
+      mom: {
+        name: "Мама Таня",
+        pin: "4455",
+        role: "mom",
+        color: "bg-indigo-700",
+        ring: "ring-4 ring-indigo-500 border-indigo-600",
+        dot: "bg-indigo-700 border-indigo-700",
+        greeting: "Здравствуйте, Таня! 👑",
+        desc: "Панель управления домом и задачами"
+      }
+    };
+
+    const PRAISES = [
+      "Ты умница!", "Так держать!", "Спасибо, что стараешься!", "Отличная работа!",
+      "Горжусь тобой!", "Супер-результат!", "Идеальный порядок!", "Мама улыбнется, когда увидит!",
+      "Монетки уже в копилке!", "Твой характер становится сильнее!", "Ловко и аккуратно!"
+    ];
+
+    // Инициализация состояния в LocalStorage
+    let state = JSON.parse(localStorage.getItem('oliver_app_state')) || {
+      users: {
+        olya: { coins: 85, streak: 7 },
+        vera: { coins: 320, streak: 4 },
+        masha: { coins: 40, streak: 2 }
+      },
+      coop: { collected: 450, olya: 200, vera: 150, masha: 100 },
+      tasks: [
+        { id: 1, title: "Заправить постель сразу после сна", reward: 10, target: "all", regular: true, needPhoto: true },
+        { id: 2, title: "Сложить одежду в шкаф аккуратно", reward: 10, target: "all", regular: true, needPhoto: true },
+        { id: 3, title: "Почитать книгу 25 минут", reward: 15, target: "all", regular: true, needPhoto: false },
+        { id: 4, title: "Утренняя зарядка 10 минут", reward: 10, target: "all", regular: true, needPhoto: false },
+        { id: 5, title: "Помыть посуду за собой", reward: 15, target: "all", regular: true, needPhoto: true }
+      ],
+      pending: [] // Фото на проверке у мамы
+    };
+
+    const MARKET_ITEMS = [
+      { id: 1, title: "100 рублей карманных", price: 30, icon: "💵" },
+      { id: 2, title: "Задержаться на прогулке на 30 мин", price: 20, icon: "⏰" },
+      { id: 3, title: "Семейный поход в ресторан", price: 50, icon: "🍕" },
+      { id: 4, title: "Вкусное мороженое на выбор", price: 15, icon: "🍦" },
+      { id: 5, title: "Лечь спать на 1 час позже", price: 25, icon: "🌙" },
+      { id: 6, title: "Мама моет посуду за меня сегодня", price: 35, icon: "🧼" },
+      { id: 7, title: "Любимый молочный коктейль", price: 15, icon: "🥤" },
+      { id: 8, title: "Сертификат Ozon/WB на 500р", price: 120, icon: "🎁" }
+    ];
+
+    let activeUserKey = null;
+    let currentPin = "";
+    let currentUser = null;
+
+    function saveState() {
+      localStorage.setItem('oliver_app_state', JSON.stringify(state));
+    }
+
+    // 2. АВТОРИЗАЦИЯ И PIN
+    function selectUser(key) {
+      activeUserKey = key;
+      currentPin = "";
+      updatePinDots();
+
+      const p = PROFILES[key];
+      document.querySelectorAll('.avatar-btn').forEach(b => {
+        b.className = "avatar-btn flex flex-col items-center p-2 rounded-2xl border-2 border-slate-200 bg-white opacity-60 scale-95 transition-all";
+      });
+
+      const activeBtn = document.getElementById(`btn-${key}`);
+      activeBtn.className = `avatar-btn flex flex-col items-center p-2 rounded-2xl bg-white scale-105 opacity-100 ${p.ring} transition-all`;
+
+      document.getElementById('welcome-title').innerText = p.greeting;
+      document.getElementById('welcome-subtitle').innerText = p.desc;
+      document.getElementById('pin-pad-container').classList.remove('opacity-30', 'pointer-events-none');
+    }
+
+    function pressPin(d) {
+      if (!activeUserKey) return;
+      if (currentPin.length < 4) {
+        currentPin += d;
+        updatePinDots();
+        if (currentPin.length === 4) setTimeout(checkPin, 150);
+      }
+    }
+
+    function backspacePin() {
+      currentPin = currentPin.slice(0, -1);
+      updatePinDots();
+    }
+
+    function clearPin() {
+      currentPin = "";
+      updatePinDots();
+    }
+
+    function updatePinDots() {
+      const dots = document.querySelectorAll('.pin-dot');
+      const p = PROFILES[activeUserKey];
+      dots.forEach((dot, i) => {
+        dot.className = "pin-dot w-3.5 h-3.5 rounded-full border-2 border-slate-300 transition-all";
+        if (i < currentPin.length) {
+          if (p) dot.className = `pin-dot w-3.5 h-3.5 rounded-full scale-110 ${p.dot}`;
+          else dot.classList.add('bg-indigo-600', 'border-indigo-600');
+        }
+      });
+    }
+
+    function checkPin() {
+      const p = PROFILES[activeUserKey];
+      if (currentPin === p.pin) {
+        currentUser = { ...p, key: activeUserKey };
+        document.getElementById('screen-welcome').classList.add('hidden');
+        document.getElementById('screen-app').classList.remove('hidden');
+        initUserApp();
+      } else {
+        alert("Неверный PIN-код! Попробуйте снова.");
+        clearPin();
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      activeUserKey = null;
+      clearPin();
+      document.getElementById('screen-app').classList.add('hidden');
+      document.getElementById('screen-welcome').classList.remove('hidden');
+      document.getElementById('welcome-title').innerText = "ОЛИВЕР";
+      document.getElementById('welcome-subtitle').innerText = "Нажмите на свой профиль для входа";
+      document.getElementById('pin-pad-container').classList.add('opacity-30', 'pointer-events-none');
+    }
+
+    // 3. ПРИЛОЖЕНИЕ
+    function initUserApp() {
+      const header = document.getElementById('user-header');
+      header.className = `p-5 pb-4 rounded-b-3xl text-white shadow-md transition-colors duration-300 ${currentUser.color}`;
+      document.getElementById('user-display-name').innerText = currentUser.name;
+
+      const adminTab = document.getElementById('tab-admin');
+      const balanceCard = document.getElementById('balance-card');
+
+      if (currentUser.role === 'mom') {
+        adminTab.classList.remove('hidden');
+        balanceCard.classList.add('hidden');
+        document.getElementById('role-badge').innerText = "Мама / Контроль";
+        switchTab('admin');
+      } else {
+        adminTab.classList.add('hidden');
+        balanceCard.classList.remove('hidden');
+        document.getElementById('role-badge').innerText = "Дочка";
+        updateChildEconomy();
+        switchTab('tasks');
+      }
+    }
+
+    function updateChildEconomy() {
+      const uData = state.users[currentUser.key];
+      // Проверка налога 600 монет
+      if (uData.coins >= 600) {
+        const penalty = uData.coins * 0.10;
+        uData.coins -= penalty;
+        alert(`Баланс достиг 600 монет! Списано 10% (${penalty.toFixed(1)} 🪙) налога на застой.`);
+        saveState();
+      }
+
+      document.getElementById('user-coins-val').innerText = uData.coins.toFixed(1);
+      document.getElementById('streak-badge').innerText = `Стрик: ${uData.streak} дн.`;
+
+      const depInfo = document.getElementById('deposit-info');
+      if (uData.coins >= 550) {
+        depInfo.innerHTML = "<span class='text-red-200 font-bold'>⚠️ Скоро налог 10%!</span>";
+      } else if (uData.coins >= 300) {
+        depInfo.innerHTML = "<span class='text-emerald-200 font-semibold'>✅ Депозит +1% в день</span>";
+      } else {
+        depInfo.innerText = "Депозит от 300 монет";
+      }
+    }
+
+    function switchTab(tab) {
+      ['tasks', 'market', 'coop', 'admin'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (view) view.classList.add('hidden');
+        if (btn) btn.classList.remove('active');
+      });
+      document.getElementById(`view-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}`).classList.add('active');
+
+      if (tab === 'tasks') renderTasks();
+      if (tab === 'market') renderMarket();
+      if (tab === 'coop') renderCoop();
+      if (tab === 'admin') renderAdmin();
+    }
+
+    // 4. ЗАДАНИЯ И СЖАТИЕ ФОТО
+    function renderTasks() {
+      const c = document.getElementById('tasks-container');
+      c.innerHTML = "";
+      const list = state.tasks.filter(t => t.target === 'all' || t.target === currentUser.key);
+
+      list.forEach(t => {
+        const isPending = state.pending.some(p => p.taskId === t.id && p.userKey === currentUser.key);
+        const card = document.createElement('div');
+        card.className = "bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between";
+        card.innerHTML = `
+          <div class="pr-2">
+            <p class="text-xs font-bold text-slate-800">${t.title}</p>
+            <div class="flex items-center gap-1.5 mt-1">
+              <span class="text-[11px] font-extrabold text-amber-500">+${t.reward} 🪙</span>
+              ${t.needPhoto ? '<span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded">Фото</span>' : ''}
+              ${t.regular ? '<span class="text-[9px] bg-indigo-50 text-indigo-500 px-1.5 py-0.5 rounded">Каждый день</span>' : ''}
+            </div>
+          </div>
+          <div>
+            ${isPending ? `
+              <span class="text-[10px] text-amber-600 bg-amber-50 px-2 py-1 rounded-lg font-bold">На проверке ⏳</span>
+            ` : t.needPhoto ? `
+              <label class="cursor-pointer bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm active:scale-95 inline-flex items-center gap-1">
+                <span>📸 Фото</span>
+                <input type="file" accept="image/*" capture="environment" class="hidden" onchange="uploadTaskPhoto(event, ${t.id})">
+              </label>
+            ` : `
+              <button onclick="completeSimpleTask(${t.id})" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-sm active:scale-95">Сделано</button>
+            `}
+          </div>
+        `;
+        c.appendChild(card);
+      });
+    }
+
+    // Скрипт сжатия фото до 1080p
+    function compressImage(file, maxDimension = 1080, quality = 0.8) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w > h && w > maxDimension) { h = Math.round((h * maxDimension) / w); w = maxDimension; }
+            else if (h > maxDimension) { w = Math.round((w * maxDimension) / h); h = maxDimension; }
+            
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+        };
+        reader.onerror = reject;
+      });
+    }
+
+    async function uploadTaskPhoto(event, taskId) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const compressedBase64 = await compressImage(file, 1080, 0.8);
+        const task = state.tasks.find(t => t.id === taskId);
+        state.pending.push({
+          id: Date.now(),
+          taskId,
+          userKey: currentUser.key,
+          userName: currentUser.name,
+          taskTitle: task.title,
+          reward: task.reward,
+          photo: compressedBase64,
+          date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+        saveState();
+        showPraise("Фото отправлено маме на проверку!");
+        renderTasks();
+      } catch (err) {
+        alert("Ошибка сжатия снимка: " + err.message);
+      }
+    }
+
+    function completeSimpleTask(taskId) {
+      const task = state.tasks.find(t => t.id === taskId);
+      rewardUser(currentUser.key, task.reward);
+      showPraise();
+      renderTasks();
+    }
+
+    function rewardUser(uKey, amount) {
+      const u = state.users[uKey];
+      let bonus = 0;
+      if (u.streak >= 7) bonus = amount * 0.01; // +1% за стрик от 7 дней
+      u.coins += (amount + bonus);
+      saveState();
+      updateChildEconomy();
+    }
+
+    // 5. ПАНЕЛЬ МАМЫ
+    function renderAdmin() {
+      const c = document.getElementById('pending-tasks-container');
+      c.innerHTML = "";
+      if (state.pending.length === 0) {
+        c.innerHTML = "<p class='text-xs text-slate-400 bg-white p-4 rounded-xl text-center'>Новых отчетов пока нет 🎉</p>";
+        return;
+      }
+
+      state.pending.forEach(p => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-200 shadow-sm space-y-2";
+        card.innerHTML = `
+          <div class="flex justify-between items-center text-xs">
+            <span class="font-bold text-slate-800">${p.userName} • ${p.taskTitle}</span>
+            <span class="text-amber-500 font-bold">+${p.reward} 🪙</span>
+          </div>
+          <img src="${p.photo}" class="w-full h-44 object-cover rounded-xl border border-slate-100">
+          <div class="flex gap-2 pt-1">
+            <button onclick="approveReport(${p.id})" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold">Одобрить ✓</button>
+            <button onclick="rejectReport(${p.id})" class="flex-1 py-2 bg-rose-50 text-rose-600 rounded-xl text-xs font-bold">Отклонить ✕</button>
+          </div>
+        `;
+        c.appendChild(card);
+      });
+    }
+
+    function approveReport(id) {
+      const p = state.pending.find(x => x.id === id);
+      if (!p) return;
+      rewardUser(p.userKey, p.reward);
+      state.pending = state.pending.filter(x => x.id !== id);
+      saveState();
+      renderAdmin();
+      alert(`Задание одобрено! ${p.userName} получила ${p.reward} монет.`);
+    }
+
+    function rejectReport(id) {
+      state.pending = state.pending.filter(x => x.id !== id);
+      saveState();
+      renderAdmin();
+      alert("Задание отклонено.");
+    }
+
+    function adminAddTask() {
+      const title = document.getElementById('admin-task-title').value.trim();
+      const reward = parseFloat(document.getElementById('admin-task-reward').value) || 10;
+      const target = document.getElementById('admin-task-target').value;
+      const regular = document.getElementById('admin-task-regular').checked;
+      const needPhoto = document.getElementById('admin-task-photo').checked;
+
+      if (!title) return alert("Введите название дела!");
+
+      state.tasks.push({ id: Date.now(), title, reward, target, regular, needPhoto });
+      saveState();
+      document.getElementById('admin-task-title').value = "";
+      alert("Поручение успешно опубликовано!");
+    }
+
+    // 6. МАРКЕТПЛЕЙС И СЕМЕЙНАЯ КОПИЛКА
+    function renderMarket() {
+      const c = document.getElementById('market-container');
+      c.innerHTML = "";
+      MARKET_ITEMS.forEach(m => {
+        const canBuy = state.users[currentUser.key].coins >= m.price;
+        const card = document.createElement('div');
+        card.className = "bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between";
+        card.innerHTML = `
+          <div>
+            <div class="text-2xl mb-1">${m.icon}</div>
+            <p class="text-xs font-bold text-slate-800 leading-tight">${m.title}</p>
+          </div>
+          <div class="mt-3 flex items-center justify-between">
+            <span class="text-xs font-black text-amber-500">${m.price} 🪙</span>
+            <button onclick="buyReward(${m.price}, '${m.title}')" class="px-2.5 py-1 rounded-xl text-[11px] font-bold ${canBuy ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-400'}" ${!canBuy ? 'disabled' : ''}>Купить</button>
+          </div>
+        `;
+        c.appendChild(card);
+      });
+    }
+
+    function buyReward(price, title) {
+      const u = state.users[currentUser.key];
+      if (u.coins < price) return alert("Недостаточно монет!");
+      if (confirm(`Купить "${title}" за ${price} монет?`)) {
+        u.coins -= price;
+        saveState();
+        updateChildEconomy();
+        renderMarket();
+        alert(`🎉 Поздравляем! Заявка на "${title}" отправлена маме.`);
+      }
+    }
+
+    function renderCoop() {
+      document.getElementById('coop-collected').innerText = state.coop.collected;
+      document.getElementById('coop-olya').innerText = state.coop.olya;
+      document.getElementById('coop-vera').innerText = state.coop.vera;
+      document.getElementById('coop-masha').innerText = state.coop.masha;
+      const pct = Math.min(100, Math.round((state.coop.collected / 1000) * 100));
+      document.getElementById('coop-progress-bar').style.width = pct + "%";
+    }
+
+    function contributeCoop() {
+      const inp = document.getElementById('coop-input');
+      const val = parseFloat(inp.value);
+      const u = state.users[currentUser.key];
+      if (!val || val <= 0) return alert("Введите сумму!");
+      if (u.coins < val) return alert("У вас нет столько монет!");
+
+      u.coins -= val;
+      state.coop.collected += val;
+      state.coop[currentUser.key] += val;
+      saveState();
+      inp.value = "";
+      updateChildEconomy();
+      renderCoop();
+      showPraise("Спасибо за вклад в семейную поездку!");
+    }
+
+    function showPraise(customText) {
+      const t = document.getElementById('toast');
+      const txt = document.getElementById('toast-text');
+      txt.innerText = customText || PRAISES[Math.floor(Math.random() * PRAISES.length)];
+      t.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 2500);
+    }
+  </script>
+</body>
+</html>
