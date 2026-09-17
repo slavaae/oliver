@@ -1,0 +1,2 @@
+await completePurchase(req.params.id);
+res.json({ success: true });
